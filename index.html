@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Events - Client Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800">
+
+    <!-- Top Navigation -->
+    <nav class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
+        <div class="text-xl font-bold"><i class="fa-solid fa-ring mr-2"></i>Magic Events</div>
+        <div class="text-sm">Welcome, Yash Family</div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-md mx-auto p-4 pb-20">
+
+        <!-- Live Dashboard Metrics -->
+        <h2 class="text-lg font-bold mb-3 text-gray-700">Live Logistics</h2>
+        <div class="grid grid-cols-2 gap-4 mb-6" id="dashboard-container">
+            <div class="bg-white p-4 rounded-xl shadow border-l-4 border-indigo-500">
+                <p class="text-xs text-gray-500">Total Rooms</p>
+                <h3 class="text-2xl font-bold text-indigo-600" id="stat-total-rooms">--</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
+                <p class="text-xs text-gray-500">Checked-In</p>
+                <h3 class="text-2xl font-bold text-green-600" id="stat-checked-in">--</h3>
+            </div>
+        </div>
+
+        <!-- Emergency SOS Section -->
+        <div class="bg-red-50 p-4 rounded-xl shadow mb-6 border border-red-200">
+            <h2 class="text-lg font-bold text-red-700 mb-2"><i class="fa-solid fa-bell mr-2"></i>Quick Request (SOS)</h2>
+            <input type="text" id="sos-message" placeholder="E.g., Send 5 water bottles to Room 101" class="w-full p-2 rounded border border-gray-300 mb-2 text-sm">
+            <button onclick="sendSOS()" class="w-full bg-red-600 text-white font-bold py-2 rounded shadow hover:bg-red-700 transition">Send to Event Manager</button>
+            <p id="sos-status" class="text-xs text-green-600 mt-2 hidden">Request Sent Successfully!</p>
+        </div>
+
+        <!-- Dynamic Itinerary -->
+        <h2 class="text-lg font-bold mb-3 text-gray-700">Today's Itinerary</h2>
+        <div class="space-y-3 mb-6" id="itinerary-container">
+            <p class="text-sm text-gray-500">Loading schedule...</p>
+            <!-- Injected via JS -->
+        </div>
+
+        <!-- Master Guest List (Preview) -->
+        <h2 class="text-lg font-bold mb-3 text-gray-700">Guest Arrivals</h2>
+        <div class="bg-white rounded-xl shadow overflow-hidden">
+            <table class="min-w-full text-left text-sm">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-3">Name</th>
+                        <th class="p-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="guest-container" class="divide-y divide-gray-200">
+                    <tr><td colspan="2" class="p-3 text-gray-500">Loading guests...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Bottom App Navigation -->
+    <div class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around p-3 text-gray-500 text-xs">
+        <div class="text-center text-indigo-600"><i class="fa-solid fa-home text-lg block mb-1"></i>Home</div>
+        <div class="text-center"><i class="fa-solid fa-users text-lg block mb-1"></i>Guests</div>
+        <div class="text-center"><i class="fa-solid fa-file-invoice text-lg block mb-1"></i>Ledger</div>
+        <div class="text-center"><i class="fa-solid fa-folder-open text-lg block mb-1"></i>Vault</div>
+    </div>
+
+    <!-- JavaScript to Fetch Data -->
+    <script>
+        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+        const API_URL = 'https://docs.google.com/spreadsheets/d/1o_5mhZxR0JCZEVjyggQReZTMibHBeuf4L_YnlnAG1-E/edit?pli=1&gid=0#gid=0';
+
+        // Load Data on Startup
+        window.onload = () => {
+            fetchDashboard();
+            fetchItinerary();
+            fetchGuests();
+        };
+
+        async function fetchDashboard() {
+            try {
+                let res = await fetch(`${API_URL}?action=getDashboard`);
+                let data = await res.json();
+                
+                // Assuming sheet has 'Total Rooms' and 'Checked-In'
+                data.forEach(item => {
+                    if(item.Metric === 'Total Rooms') document.getElementById('stat-total-rooms').innerText = item.Value;
+                    if(item.Metric === 'Checked-In') document.getElementById('stat-checked-in').innerText = item.Value;
+                });
+            } catch(e) { console.error("Error fetching dashboard", e); }
+        }
+
+        async function fetchItinerary() {
+            try {
+                let res = await fetch(`${API_URL}?action=getItinerary`);
+                let data = await res.json();
+                
+                let html = '';
+                data.forEach(item => {
+                    html += `
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-2 border-indigo-400 flex items-center">
+                        <div class="text-indigo-600 font-bold w-20 text-sm">${item.Time}</div>
+                        <div class="ml-2">
+                            <div class="font-bold text-gray-800">${item.Event}</div>
+                            <div class="text-xs text-gray-500"><i class="fa-solid fa-location-dot mr-1"></i>${item.Venue}</div>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('itinerary-container').innerHTML = html;
+            } catch(e) { console.error("Error fetching itinerary", e); }
+        }
+
+        async function fetchGuests() {
+            try {
+                let res = await fetch(`${API_URL}?action=getGuests`);
+                let data = await res.json();
+                
+                let html = '';
+                data.forEach(item => {
+                    let statusColor = item.Status.includes('Arriving') ? 'text-orange-500' : 'text-green-500';
+                    html += `
+                    <tr>
+                        <td class="p-3 font-medium text-gray-700">${item.Name}<br><span class="text-xs text-gray-400">${item.Category}</span></td>
+                        <td class="p-3 font-bold ${statusColor}">${item.Status}</td>
+                    </tr>`;
+                });
+                document.getElementById('guest-container').innerHTML = html;
+            } catch(e) { console.error("Error fetching guests", e); }
+        }
+
+        async function sendSOS() {
+            const msgInput = document.getElementById('sos-message');
+            const statusText = document.getElementById('sos-status');
+            
+            if(!msgInput.value) return alert("Please enter a message!");
+            
+            const payload = {
+                action: 'submitSOS',
+                clientName: 'Yash Family',
+                message: msgInput.value
+            };
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                msgInput.value = '';
+                statusText.classList.remove('hidden');
+                setTimeout(() => { statusText.classList.add('hidden'); }, 3000);
+            } catch(e) {
+                alert("Error sending request.");
+            }
+        }
+    </script>
+</body>
+</html>
