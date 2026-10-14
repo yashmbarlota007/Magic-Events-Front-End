@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Portal - Magic Events</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-800 pb-10">
+
+    <!-- ================= GUEST LOGIN SCREEN ================= -->
+    <div id="login-screen" class="fixed inset-0 bg-white z-50 flex flex-col justify-center items-center p-6">
+        <div class="bg-indigo-50 p-6 rounded-full mb-6">
+            <i class="fa-solid fa-gem text-5xl text-indigo-600"></i>
+        </div>
+        <h1 class="text-3xl font-bold mb-2 text-gray-800 tracking-tight">Welcome Guest</h1>
+        <p class="text-sm text-gray-500 mb-8 text-center">Enter your registered Mobile Number to access your itinerary and room details.</p>
+        
+        <div class="w-full max-w-xs relative mb-4">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa-solid fa-phone text-gray-400"></i>
+            </div>
+            <input type="number" id="login-phone" placeholder="Mobile Number" class="w-full pl-10 pr-3 py-3 rounded-xl border border-gray-300 text-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-sm">
+        </div>
+        
+        <button onclick="guestLogin()" id="login-btn" class="w-full max-w-xs bg-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-indigo-700 transition">
+            Access My Details
+        </button>
+        <p id="login-error" class="text-red-500 text-sm mt-4 hidden font-medium">Number not found. Check with host.</p>
+    </div>
+
+    <!-- ================= MAIN APP DASHBOARD ================= -->
+    <div id="app-content" class="hidden">
+        
+        <!-- Top Navigation -->
+        <nav class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2">
+            <div class="text-lg font-bold">
+                <i class="fa-solid fa-ring mr-2"></i>Magic Events
+            </div>
+            <button onclick="logout()" class="text-xs text-indigo-200 hover:text-white font-medium">
+                <i class="fa-solid fa-right-from-bracket mr-1"></i>Logout
+            </button>
+        </nav>
+
+        <div class="max-w-md mx-auto p-4 pt-24">
+            
+            <!-- Welcome Header -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Hello, <span id="guest-name" class="text-indigo-600">Guest</span>!</h2>
+                <p class="text-sm text-gray-500 mt-1">We are thrilled to have you with us.</p>
+            </div>
+
+            <!-- Logistics Cards -->
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <!-- Room Details -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                    <div class="bg-indigo-50 p-3 rounded-full mb-3 text-indigo-600">
+                        <i class="fa-solid fa-door-closed text-xl"></i>
+                    </div>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-1">Room No.</p>
+                    <h3 class="text-xl font-black text-gray-800" id="guest-room">--</h3>
+                    <p class="text-[10px] font-bold mt-2 px-2 py-1 rounded-full bg-gray-100 text-gray-600" id="guest-status">Status</p>
+                </div>
+                
+                <!-- Driver Details -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center">
+                    <div class="bg-green-50 p-3 rounded-full mb-3 text-green-600">
+                        <i class="fa-solid fa-car text-xl"></i>
+                    </div>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-1">Transport</p>
+                    <h3 class="text-sm font-bold text-gray-800 leading-tight" id="guest-driver">Not Assigned</h3>
+                </div>
+            </div>
+
+            <!-- Dynamic Itinerary -->
+            <h2 class="text-lg font-bold mb-4 text-gray-800 border-b pb-2"><i class="fa-regular fa-calendar mr-2"></i>Event Schedule</h2>
+            <div class="space-y-3" id="itinerary-container">
+                <p class="text-sm text-gray-500">Loading schedule...</p>
+            </div>
+
+            <div class="mt-8 text-center">
+                <p class="text-xs text-gray-400">Powered by Magic Events OS</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
+        let currentGuestPhone = localStorage.getItem('magic_guest_phone');
+
+        window.onload = () => {
+            if (currentGuestPhone) {
+                // Background refresh without showing login
+                fetchGuestData(currentGuestPhone, true);
+            }
+            // Background Auto-Sync every 2 Minutes (120,000 ms)
+            setInterval(() => { 
+                if(currentGuestPhone) fetchGuestData(currentGuestPhone, true); 
+            }, 120000);
+        };
+
+        async function guestLogin() {
+            const phone = document.getElementById('login-phone').value;
+            const btn = document.getElementById('login-btn');
+            const errorTxt = document.getElementById('login-error');
+            
+            if (!phone) {
+                errorTxt.innerText = "Please enter your mobile number.";
+                errorTxt.classList.remove('hidden');
+                return;
+            }
+            
+            btn.innerText = "Verifying...";
+            errorTxt.classList.add('hidden');
+            
+            await fetchGuestData(phone, false);
+        }
+
+        // isAutoRefresh determines if we should throw errors or just silently update
+        async function fetchGuestData(phone, isAutoRefresh) {
+            const btn = document.getElementById('login-btn');
+            
+            try {
+                let res = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'guestLogin', phone: phone }) 
+                });
+                let data = await res.json();
+                
+                if (data.status === 'Success') {
+                    // Save session
+                    currentGuestPhone = phone;
+                    localStorage.setItem('magic_guest_phone', phone);
+                    
+                    // Update UI
+                    document.getElementById('guest-name').innerText = data.guestData.Name.split(' ')[0]; // First name only
+                    document.getElementById('guest-room').innerText = data.guestData.Room_No;
+                    document.getElementById('guest-driver').innerText = data.guestData.Driver_Details;
+                    
+                    let st = data.guestData.Status;
+                    let stEl = document.getElementById('guest-status');
+                    stEl.innerText = st;
+                    if(st === 'Checked In') {
+                        stEl.className = "text-[10px] font-bold mt-2 px-2 py-1 rounded-full bg-green-100 text-green-700";
+                    } else {
+                        stEl.className = "text-[10px] font-bold mt-2 px-2 py-1 rounded-full bg-yellow-100 text-yellow-700";
+                    }
+
+                    // Load generic itinerary
+                    fetchItinerary();
+                    
+                    // Show App
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('app-content').classList.remove('hidden');
+                } else {
+                    if(!isAutoRefresh) {
+                        document.getElementById('login-error').innerText = "Number not found in Guest List.";
+                        document.getElementById('login-error').classList.remove('hidden');
+                        btn.innerText = "Access My Details";
+                    } else {
+                        // If auto-refresh fails (e.g. number deleted from sheet), log them out
+                        logout();
+                    }
+                }
+            } catch(e) { 
+                if(!isAutoRefresh) {
+                    document.getElementById('login-error').innerText = "Network error. Please try again.";
+                    document.getElementById('login-error').classList.remove('hidden');
+                    btn.innerText = "Access My Details";
+                }
+            }
+        }
+
+        async function fetchItinerary() {
+            try {
+                let res = await fetch(`${API_URL}?action=getItinerary`);
+                let data = await res.json();
+                let html = '';
+                
+                data.forEach(item => { 
+                    html += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center mb-3">
+                        <div class="text-indigo-600 font-black w-20 text-sm">${item.Time}</div>
+                        <div class="ml-3 border-l-2 border-indigo-100 pl-3">
+                            <div class="font-bold text-gray-800">${item.Event}</div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                <i class="fa-solid fa-location-dot mr-1 text-indigo-400"></i>${item.Venue}
+                            </div>
+                        </div>
+                    </div>`; 
+                });
+                document.getElementById('itinerary-container').innerHTML = html;
+            } catch(e) { console.error("Error fetching itinerary", e); }
+        }
+
+        function logout() {
+            localStorage.removeItem('magic_guest_phone');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
