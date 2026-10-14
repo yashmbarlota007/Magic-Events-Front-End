@@ -9,31 +9,83 @@
 </head>
 <body class="bg-gray-900 font-sans text-gray-100">
 
-    <nav class="bg-black text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2">
-        <div class="text-lg font-bold text-yellow-400"><i class="fa-solid fa-headset mr-2"></i>Staff Portal</div>
-        <button onclick="fetchData()" class="text-sm bg-gray-800 px-3 py-1 rounded"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button>
-    </nav>
-
-    <div class="max-w-md mx-auto p-4 pt-20 pb-10">
+    <!-- STAFF LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex flex-col justify-center items-center p-6">
+        <i class="fa-solid fa-user-shield text-5xl text-yellow-400 mb-4"></i>
+        <h1 class="text-2xl font-bold mb-2 text-white">Staff Portal</h1>
+        <p class="text-sm text-gray-400 mb-6 text-center">Enter your Mobile Number & PIN to access operations.</p>
         
-        <!-- Live SOS Alerts -->
-        <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Live SOS Alerts</h2>
-        <div id="sos-container" class="space-y-2 mb-6">
-            <p class="text-xs text-gray-500">Checking for alerts...</p>
-        </div>
+        <input type="number" id="login-mobile" placeholder="Mobile Number" class="text-center text-lg p-3 rounded-xl border border-gray-700 bg-gray-800 text-white mb-3 w-full max-w-xs focus:outline-none focus:border-yellow-400">
+        <input type="password" id="login-pin" placeholder="4-Digit PIN" class="text-center text-2xl tracking-widest p-3 rounded-xl border border-gray-700 bg-gray-800 text-white mb-4 w-full max-w-xs focus:outline-none focus:border-yellow-400">
+        
+        <button onclick="staffLogin()" id="login-btn" class="w-full max-w-xs bg-yellow-500 text-black font-bold py-3 rounded-xl shadow hover:bg-yellow-400 transition">Login to Dashboard</button>
+        <p id="login-error" class="text-red-400 text-sm mt-3 hidden">Invalid details. Contact Admin.</p>
+    </div>
 
-        <!-- Guest Check-in Engine -->
-        <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-clipboard-check mr-2"></i>Pending Arrivals</h2>
-        <div id="pending-guests-container" class="space-y-3">
-            <p class="text-xs text-gray-500">Loading guests...</p>
-        </div>
+    <!-- MAIN APP -->
+    <div id="app-content" class="hidden">
+        <nav class="bg-black text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2">
+            <div class="text-sm font-bold text-yellow-400"><i class="fa-solid fa-user-check mr-2"></i><span id="logged-in-user">Staff</span></div>
+            <button onclick="logout()" class="text-xs text-red-400"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
+        </nav>
 
+        <div class="max-w-md mx-auto p-4 pt-20 pb-10">
+            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Live SOS Alerts</h2>
+            <div id="sos-container" class="space-y-2 mb-6"><p class="text-xs text-gray-500">Checking for alerts...</p></div>
+
+            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-clipboard-check mr-2"></i>Pending Arrivals</h2>
+            <div id="pending-guests-container" class="space-y-3"><p class="text-xs text-gray-500">Loading guests...</p></div>
+        </div>
     </div>
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
+        let currentStaffName = localStorage.getItem('magic_staff_name');
 
-        window.onload = () => { fetchData(); };
+        window.onload = () => {
+            if (currentStaffName) showApp();
+        };
+
+        async function staffLogin() {
+            const mobile = document.getElementById('login-mobile').value;
+            const pin = document.getElementById('login-pin').value;
+            const btn = document.getElementById('login-btn');
+            
+            if (!mobile || !pin) return alert("Please enter both Mobile and PIN");
+            
+            btn.innerText = "Verifying...";
+            try {
+                let res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'staffLogin', mobile: mobile, pin: pin })
+                });
+                let data = await res.json();
+                
+                if (data.status === 'Success') {
+                    currentStaffName = data.staffName;
+                    localStorage.setItem('magic_staff_name', currentStaffName);
+                    showApp();
+                } else {
+                    document.getElementById('login-error').classList.remove('hidden');
+                    btn.innerText = "Login to Dashboard";
+                }
+            } catch(e) {
+                alert("Network error. Try again.");
+                btn.innerText = "Login to Dashboard";
+            }
+        }
+
+        function showApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('logged-in-user').innerText = currentStaffName;
+            fetchData();
+        }
+
+        function logout() {
+            localStorage.removeItem('magic_staff_name');
+            location.reload();
+        }
 
         function fetchData() {
             fetchSOS(); fetchPendingGuests();
@@ -42,7 +94,6 @@
         async function fetchSOS() {
             let data = await (await fetch(`${API_URL}?action=getSOS`)).json();
             let html = '';
-            // Reverse to show latest first
             data.reverse().forEach(item => {
                 html += `<div class="bg-gray-800 p-3 rounded shadow border-l-4 border-red-500"><div class="text-xs text-gray-400 mb-1">${item.Timestamp} | ${item.Client_Name}</div><div class="font-bold text-white">${item.Message}</div></div>`;
             });
@@ -73,12 +124,12 @@
             
             await fetch(API_URL, { 
                 method: 'POST', 
-                body: JSON.stringify({ action: 'checkInGuest', guestName: guestName }) 
+                body: JSON.stringify({ action: 'checkInGuest', guestName: guestName, staffName: currentStaffName }) 
             });
             
             btnElement.innerText = "Done";
             btnElement.classList.replace('bg-yellow-500', 'bg-green-500');
-            setTimeout(fetchData, 1000); // Refresh list
+            setTimeout(fetchData, 1000);
         }
     </script>
 </body>
