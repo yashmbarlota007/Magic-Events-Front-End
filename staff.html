@@ -7,23 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 font-sans text-gray-100 pb-10">
+<body class="bg-gray-900 font-sans text-gray-100 pb-20">
 
     <!-- ========================================================================= -->
     <!-- 1. STAFF LOGIN SCREEN -->
     <!-- ========================================================================= -->
     <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex flex-col justify-center items-center p-6">
-        <i class="fa-solid fa-user-shield text-5xl text-yellow-400 mb-4"></i>
-        <h1 class="text-2xl font-bold mb-2 text-white">Staff Portal</h1>
-        <p class="text-sm text-gray-400 mb-6 text-center">Enter your Mobile Number & PIN to access operations.</p>
+        <i class="fa-solid fa-user-shield text-5xl text-yellow-400 mb-5"></i>
+        <h1 class="text-3xl font-bold mb-2 text-white tracking-tight">Staff Portal</h1>
+        <p class="text-sm text-gray-400 mb-8 text-center font-medium">Enter your Mobile Number & PIN to access operations.</p>
         
-        <input type="number" id="login-mobile" placeholder="Mobile Number" class="text-center text-lg p-3 rounded-xl border border-gray-700 bg-gray-800 text-white mb-3 w-full max-w-xs focus:outline-none focus:border-yellow-400">
-        <input type="password" id="login-pin" placeholder="4-Digit PIN" class="text-center text-2xl tracking-widest p-3 rounded-xl border border-gray-700 bg-gray-800 text-white mb-4 w-full max-w-xs focus:outline-none focus:border-yellow-400">
+        <input type="number" id="login-mobile" placeholder="Mobile Number" class="text-center text-lg p-4 rounded-xl border border-gray-700 bg-gray-800 text-white mb-4 w-full max-w-xs focus:outline-none focus:border-yellow-400 shadow-inner">
+        <input type="password" id="login-pin" placeholder="4-Digit PIN" class="text-center text-2xl tracking-widest p-4 rounded-xl border border-gray-700 bg-gray-800 text-white mb-6 w-full max-w-xs focus:outline-none focus:border-yellow-400 shadow-inner">
         
-        <button onclick="staffLogin()" id="login-btn" class="w-full max-w-xs bg-yellow-500 text-black font-bold py-3 rounded-xl shadow hover:bg-yellow-400 transition">
-            Login to Dashboard
+        <button onclick="staffLogin()" id="login-btn" class="w-full max-w-xs bg-yellow-500 text-black font-bold py-4 rounded-xl shadow-lg hover:bg-yellow-400 transition text-lg">
+            Login to Operations
         </button>
-        <p id="login-error" class="text-red-400 text-sm mt-3 hidden">Invalid details. Contact Admin.</p>
+        <p id="login-error" class="text-red-400 text-sm mt-4 hidden font-bold">Invalid credentials. Contact Admin.</p>
     </div>
 
     <!-- ========================================================================= -->
@@ -31,16 +31,17 @@
     <!-- ========================================================================= -->
     <div id="app-content" class="hidden">
         
-        <!-- Top Navigation Area -->
-        <nav class="bg-black text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2 border-b border-gray-800">
-            <div class="text-sm font-bold text-yellow-400">
-                <i class="fa-solid fa-user-check mr-2"></i><span id="logged-in-user">Staff</span>
+        <!-- Top Navigation -->
+        <nav class="bg-black text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-20 max-w-md mx-auto left-1/2 -translate-x-1/2 border-b border-gray-800">
+            <div class="text-sm font-bold text-yellow-400 flex items-center">
+                <i class="fa-solid fa-user-check mr-2 text-lg"></i>
+                <span id="logged-in-user">Staff Member</span>
             </div>
             <div class="flex space-x-4">
-                <button onclick="fetchData()" class="text-xs text-blue-400">
+                <button onclick="fetchData()" class="text-xs text-blue-400 font-bold hover:text-blue-300">
                     <i class="fa-solid fa-rotate mr-1"></i>Refresh
                 </button>
-                <button onclick="logout()" class="text-xs text-red-400">
+                <button onclick="logout()" class="text-xs text-red-400 font-bold hover:text-red-300">
                     <i class="fa-solid fa-right-from-bracket mr-1"></i>Logout
                 </button>
             </div>
@@ -48,64 +49,104 @@
 
         <div class="max-w-md mx-auto p-4 pt-20">
             
-            <!-- ================= SHOWFLOW EXECUTION (NEW CAMERA ENGINE) ================= -->
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
-                <i class="fa-solid fa-camera mr-2"></i>Live Showflow Executions
-            </h2>
-            <div id="showflow-container" class="space-y-3 mb-8">
-                <p class="text-xs text-gray-500">Loading tasks...</p>
+            <!-- ================= TAB 1: SHOWFLOW EXECUTION ================= -->
+            <div id="screen-showflow" class="app-screen">
+                <h2 class="text-xl font-bold mb-4 text-white tracking-tight flex items-center">
+                    <i class="fa-solid fa-camera mr-2 text-yellow-400"></i>Showflow Execution
+                </h2>
+                <div id="showflow-container" class="space-y-4">
+                    <p class="text-sm text-gray-500 italic">Loading tasks...</p>
+                </div>
             </div>
 
-            <!-- ================= LIVE SOS ALERTS ================= -->
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
-                <i class="fa-solid fa-triangle-exclamation mr-2"></i>Live SOS Alerts
-            </h2>
-            <div id="sos-container" class="space-y-2 mb-8">
-                <p class="text-xs text-gray-500">Checking for alerts...</p>
+            <!-- ================= TAB 2: SOS ALERTS ================= -->
+            <div id="screen-sos" class="app-screen hidden">
+                <h2 class="text-xl font-bold mb-4 text-white tracking-tight flex items-center">
+                    <i class="fa-solid fa-triangle-exclamation mr-2 text-yellow-400"></i>Live SOS Alerts
+                </h2>
+                <div id="sos-container" class="space-y-3">
+                    <p class="text-sm text-gray-500 italic">Checking for alerts...</p>
+                </div>
             </div>
 
-            <!-- ================= RAISE EXPENSE REQUEST ================= -->
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
-                <i class="fa-solid fa-file-invoice-dollar mr-2"></i>Raise Expense Request
-            </h2>
-            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
-                <p class="text-xs text-gray-400 mb-3">Send out-of-scope expenses to client for approval.</p>
-                <input type="text" id="expense-desc" placeholder="Item Description (e.g., 50 Extra Plates)" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white mb-3 text-sm focus:outline-none focus:border-yellow-400">
-                <input type="text" id="expense-amount" placeholder="Amount (e.g., ₹15,000)" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white mb-4 text-sm focus:outline-none focus:border-yellow-400">
-                <button onclick="submitExpenseRequest()" id="expense-btn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg shadow hover:bg-yellow-400 transition text-sm">
-                    Send for Approval
-                </button>
-                <p id="expense-success" class="text-green-400 text-xs mt-2 hidden text-center font-bold">Request Sent to Client!</p>
+            <!-- ================= TAB 3: GUEST LOGISTICS ================= -->
+            <div id="screen-guests" class="app-screen hidden">
+                <h2 class="text-xl font-bold mb-4 text-white tracking-tight flex items-center">
+                    <i class="fa-solid fa-clipboard-check mr-2 text-yellow-400"></i>Guest Operations
+                </h2>
+                <div id="all-guests-container" class="space-y-3">
+                    <p class="text-sm text-gray-500 italic">Loading guests...</p>
+                </div>
             </div>
 
-            <!-- ================= EXPENSE STATUS HISTORY ================= -->
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
-                <i class="fa-solid fa-clock-rotate-left mr-2"></i>Expense Status
-            </h2>
-            <div id="staff-expenses-container" class="space-y-3 mb-8">
-                <p class="text-xs text-gray-500">Loading history...</p>
+            <!-- ================= TAB 4: VENDOR LOGISTICS ================= -->
+            <div id="screen-vendors" class="app-screen hidden">
+                <h2 class="text-xl font-bold mb-4 text-white tracking-tight flex items-center">
+                    <i class="fa-solid fa-truck mr-2 text-yellow-400"></i>Vendor Control
+                </h2>
+                <div id="vendor-control-container" class="space-y-3">
+                    <p class="text-sm text-gray-500 italic">Loading vendors...</p>
+                </div>
             </div>
 
-            <!-- ================= GUEST OPERATIONS ================= -->
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
-                <i class="fa-solid fa-clipboard-check mr-2"></i>Guest Operations
-            </h2>
-            <div id="all-guests-container" class="space-y-3 mb-8">
-                <p class="text-xs text-gray-500">Loading guests...</p>
-            </div>
+            <!-- ================= TAB 5: EXPENSES ================= -->
+            <div id="screen-expenses" class="app-screen hidden">
+                <h2 class="text-xl font-bold mb-4 text-white tracking-tight flex items-center">
+                    <i class="fa-solid fa-file-invoice-dollar mr-2 text-yellow-400"></i>Event Expenses
+                </h2>
+                
+                <div class="bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-700 mb-6">
+                    <p class="text-xs text-gray-400 mb-4 font-medium uppercase tracking-wide">Raise New Request</p>
+                    <input type="text" id="expense-desc" placeholder="Item Description (e.g., Extra Plates)" class="w-full p-3.5 rounded-xl bg-gray-900 border border-gray-600 text-white mb-3 text-sm focus:outline-none focus:border-yellow-400">
+                    <input type="text" id="expense-amount" placeholder="Amount (e.g., ₹15,000)" class="w-full p-3.5 rounded-xl bg-gray-900 border border-gray-600 text-white mb-4 text-sm focus:outline-none focus:border-yellow-400">
+                    <button onclick="submitExpenseRequest()" id="expense-btn" class="w-full bg-yellow-500 text-black font-bold py-3.5 rounded-xl shadow hover:bg-yellow-400 transition text-sm">
+                        Send for Approval
+                    </button>
+                    <p id="expense-success" class="text-green-400 text-xs mt-3 hidden text-center font-bold">Request Sent to Client!</p>
+                </div>
 
-            <!-- ================= VENDOR LOGISTICS ================= -->
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
-                <i class="fa-solid fa-truck mr-2"></i>Vendor Logistics
-            </h2>
-            <div id="vendor-control-container" class="space-y-3">
-                <p class="text-xs text-gray-500">Loading vendors...</p>
+                <h3 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-wider">Expense Status</h3>
+                <div id="staff-expenses-container" class="space-y-3">
+                    <p class="text-sm text-gray-500 italic">Loading history...</p>
+                </div>
             </div>
 
         </div>
+
+        <!-- ========================================================================= -->
+        <!-- BOTTOM NAVIGATION TABS FOR STAFF -->
+        <!-- ========================================================================= -->
+        <div class="fixed bottom-0 w-full max-w-md bg-gray-900 border-t border-gray-800 flex justify-between p-2 text-[10px] font-bold z-20 left-1/2 -translate-x-1/2 shadow-[0_-5px_15px_rgba(0,0,0,0.5)]">
+            
+            <div onclick="switchTab('showflow')" id="tab-showflow" class="nav-tab flex flex-col items-center justify-center text-yellow-400 w-1/5 py-1 cursor-pointer transition">
+                <i class="fa-solid fa-camera text-lg mb-1"></i>
+                <span>Tasks</span>
+            </div>
+            
+            <div onclick="switchTab('sos')" id="tab-sos" class="nav-tab flex flex-col items-center justify-center text-gray-500 w-1/5 py-1 cursor-pointer transition relative">
+                <i class="fa-solid fa-bell text-lg mb-1"></i>
+                <span>SOS</span>
+                <span id="badge-sos" class="absolute top-0 right-2 bg-red-500 rounded-full w-2 h-2 hidden"></span>
+            </div>
+            
+            <div onclick="switchTab('guests')" id="tab-guests" class="nav-tab flex flex-col items-center justify-center text-gray-500 w-1/5 py-1 cursor-pointer transition">
+                <i class="fa-solid fa-clipboard-user text-lg mb-1"></i>
+                <span>Guests</span>
+            </div>
+            
+            <div onclick="switchTab('vendors')" id="tab-vendors" class="nav-tab flex flex-col items-center justify-center text-gray-500 w-1/5 py-1 cursor-pointer transition">
+                <i class="fa-solid fa-truck text-lg mb-1"></i>
+                <span>Vendors</span>
+            </div>
+            
+            <div onclick="switchTab('expenses')" id="tab-expenses" class="nav-tab flex flex-col items-center justify-center text-gray-500 w-1/5 py-1 cursor-pointer transition">
+                <i class="fa-solid fa-indian-rupee-sign text-lg mb-1"></i>
+                <span>Bills</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Hidden Canvas required for Image Compression before sending to Google Drive -->
+    <!-- Hidden Canvas required for Image Compression -->
     <canvas id="compressCanvas" style="display:none;"></canvas>
 
     <!-- ========================================================================= -->
@@ -115,18 +156,31 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
         let currentStaffName = localStorage.getItem('magic_staff_name');
 
-        // Initial Load and Auto-Sync Setup
         window.onload = () => {
             if (currentStaffName) {
                 showApp();
             }
-            // Auto sync data every 2 minutes in the background
             setInterval(() => { 
                 if(currentStaffName) {
                     fetchData(); 
                 }
             }, 120000);
         };
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('screen-' + tabName).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-tab').forEach(t => { 
+                t.classList.remove('text-yellow-400'); 
+                t.classList.add('text-gray-500'); 
+            });
+            
+            let act = document.getElementById('tab-' + tabName);
+            act.classList.remove('text-gray-500'); 
+            act.classList.add('text-yellow-400');
+        }
 
         // Authentication Logic
         async function staffLogin() {
@@ -140,6 +194,7 @@
             }
             
             btn.innerText = "Verifying...";
+            btn.disabled = true;
             
             try {
                 let res = await fetch(API_URL, { 
@@ -154,11 +209,13 @@
                     showApp();
                 } else {
                     document.getElementById('login-error').classList.remove('hidden');
-                    btn.innerText = "Login to Dashboard";
+                    btn.innerText = "Login to Operations";
+                    btn.disabled = false;
                 }
             } catch(e) { 
                 alert("Network error. Please check your connection."); 
-                btn.innerText = "Login to Dashboard"; 
+                btn.innerText = "Login to Operations"; 
+                btn.disabled = false;
             }
         }
 
@@ -177,12 +234,12 @@
         function fetchData() {
             fetchShowflow();
             fetchSOS(); 
-            fetchStaffExpenses(); 
             fetchGuestsList(); 
             fetchVendorsList();
+            fetchStaffExpenses();
         }
 
-        // ================= SHOWFLOW EXECUTION ENGINE =================
+        // ================= TAB 1: SHOWFLOW EXECUTION ENGINE (WITH LOCATION) =================
         async function fetchShowflow() {
             try {
                 let res = await fetch(`${API_URL}?action=getShowflow`);
@@ -190,39 +247,52 @@
                 let html = '';
                 
                 data.forEach(item => {
+                    // Safety check for location field
+                    let locationHtml = item.Location ? `<span class="text-blue-400"><i class="fa-solid fa-location-dot mr-1"></i>${item.Location}</span>` : '';
+                    
                     if (item.Status !== 'Completed') {
-                        // Pending Task UI with File Input
                         html += `
-                        <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-yellow-700 relative mb-4">
-                            <div class="text-xs text-yellow-500 font-bold mb-2 tracking-wide uppercase">
-                                <i class="fa-regular fa-clock mr-1"></i>${item.Time} | ${item.Assigned_Vendor}
+                        <div class="bg-gray-800 p-5 rounded-2xl shadow-lg border border-yellow-700 relative mb-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="text-[10px] text-yellow-500 font-bold tracking-widest uppercase">
+                                    <i class="fa-regular fa-clock mr-1"></i>${item.Time}
+                                </div>
+                                <div class="text-[10px] bg-gray-700 text-gray-300 px-2 py-1 rounded font-bold uppercase">
+                                    ${item.Assigned_Vendor}
+                                </div>
                             </div>
-                            <div class="font-bold text-white mb-4 text-lg leading-tight">${item.Task}</div>
                             
-                            <!-- Hidden File Input for Camera Capture -->
+                            <div class="font-bold text-white mb-2 text-xl leading-tight">${item.Task}</div>
+                            
+                            <div class="text-xs font-medium mb-4">
+                                ${locationHtml}
+                            </div>
+                            
                             <input type="file" accept="image/*" capture="environment" id="file-${item.Task_ID}" class="hidden" onchange="handleProofUpload(this, '${item.Task_ID}')">
                             
-                            <!-- Custom Label acting as Button -->
-                            <label for="file-${item.Task_ID}" id="btn-${item.Task_ID}" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg flex justify-center items-center cursor-pointer hover:bg-yellow-400 transition shadow-md">
+                            <label for="file-${item.Task_ID}" id="btn-${item.Task_ID}" class="w-full bg-yellow-500 text-black font-bold py-3.5 rounded-xl flex justify-center items-center cursor-pointer hover:bg-yellow-400 transition shadow-md">
                                 <i class="fa-solid fa-camera mr-2 text-lg"></i>Upload Photo Proof
                             </label>
                         </div>`;
                     } else {
-                        // Completed Task UI
                         let heartReaction = item.Client_Reaction ? `<span class="text-rose-500 ml-2 animate-pulse font-bold"><i class="fa-solid fa-heart mr-1"></i>Client Loved It</span>` : '';
                         
                         html += `
-                        <div class="bg-gray-900 p-4 rounded-xl border border-green-800 opacity-80 mb-4">
-                            <div class="font-bold text-green-400 line-through text-lg">${item.Task}</div>
-                            <div class="text-xs text-gray-400 mt-2 flex items-center">
-                                <i class="fa-solid fa-check-double text-green-500 mr-1.5"></i>
-                                ${item.Completed_Timestamp}
+                        <div class="bg-gray-900 p-4 rounded-2xl border border-green-800 opacity-75 mb-3 flex items-center justify-between">
+                            <div>
+                                <div class="font-bold text-green-400 line-through text-base mb-1">${item.Task}</div>
+                                <div class="text-[10px] text-gray-500 flex items-center">
+                                    <i class="fa-solid fa-check-double text-green-600 mr-1.5"></i>
+                                    ${item.Completed_Timestamp}
+                                </div>
+                            </div>
+                            <div class="text-right">
                                 ${heartReaction}
                             </div>
                         </div>`;
                     }
                 });
-                document.getElementById('showflow-container').innerHTML = html || '<p class="text-sm text-green-500 bg-gray-800 p-3 rounded font-bold">All tasks completed successfully!</p>';
+                document.getElementById('showflow-container').innerHTML = html || '<p class="text-sm text-green-500 bg-gray-800 p-4 rounded-xl font-bold border border-green-800">All tasks completed successfully!</p>';
             } catch(e) { console.error("Error fetching showflow", e); }
         }
 
@@ -230,13 +300,11 @@
             const file = inputElement.files[0];
             if (!file) return;
             
-            // Change Button State to Loading
             const btn = document.getElementById(`btn-${taskId}`);
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>Compressing & Uploading...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>Compressing...`;
             btn.classList.replace('bg-yellow-500', 'bg-gray-600');
             btn.classList.add('text-white');
             
-            // Read and Compress Image using HTML5 Canvas
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -244,15 +312,12 @@
                     const canvas = document.getElementById('compressCanvas');
                     const ctx = canvas.getContext('2d');
                     
-                    // Resize to max width 800px to save data
                     const MAX_WIDTH = 800;
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
                     
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    // Convert to base64 with 60% JPEG quality
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); 
                     
                     sendProofToBackend(taskId, compressedBase64, btn);
@@ -263,6 +328,7 @@
         }
 
         async function sendProofToBackend(taskId, base64Data, btnElement) {
+            btnElement.innerHTML = `<i class="fa-solid fa-cloud-arrow-up mr-2 animate-bounce"></i>Uploading...`;
             try {
                 let res = await fetch(API_URL, { 
                     method: 'POST', 
@@ -277,7 +343,7 @@
                 let data = await res.json();
                 
                 if(data.status === 'Success') { 
-                    fetchShowflow(); // Refresh list immediately
+                    fetchShowflow(); 
                 } else { 
                     alert("Error uploading image to server."); 
                     btnElement.innerHTML = `<i class="fa-solid fa-rotate-right mr-2"></i>Try Again`; 
@@ -290,36 +356,45 @@
             }
         }
 
-        // ================= FETCH AND RESOLVE SOS =================
+        // ================= TAB 2: SOS ALERTS =================
         async function fetchSOS() {
             try {
                 let res = await fetch(`${API_URL}?action=getSOS`);
                 let data = await res.json();
                 let html = '';
+                let pendingCount = 0;
                 
                 data.reverse().forEach(item => {
                     let st = item.Status || 'Pending';
                     if(st !== 'Resolved') {
+                        pendingCount++;
                         html += `
                         <div class="bg-gray-800 p-4 rounded-xl shadow-lg border-l-4 border-red-500 mb-3" id="sos-${item.Timestamp}">
-                            <div class="text-xs text-gray-400 mb-2 font-medium">${item.Timestamp} | ${item.Client_Name}</div>
-                            <div class="font-bold text-white mb-3 text-base">${item.Message}</div>
-                            <button onclick="resolveSOS('${item.Timestamp}')" class="bg-green-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-green-500 transition shadow">
-                                <i class="fa-solid fa-check mr-1"></i>Mark as Resolved
+                            <div class="text-[10px] text-gray-400 mb-2 font-bold uppercase tracking-wider">${item.Timestamp} | ${item.Client_Name}</div>
+                            <div class="font-bold text-white mb-4 text-base">${item.Message}</div>
+                            <button onclick="resolveSOS('${item.Timestamp}')" class="w-full bg-green-600 text-white text-xs font-bold px-4 py-3 rounded-lg hover:bg-green-500 transition shadow">
+                                <i class="fa-solid fa-check mr-2"></i>Mark as Resolved
                             </button>
                         </div>`;
                     } else {
                         html += `
-                        <div class="bg-gray-800 p-3 rounded-lg shadow-inner border-l-4 border-green-500 mb-2 opacity-50">
-                            <div class="text-[10px] text-gray-400 mb-1">${item.Timestamp} | ${item.Client_Name}</div>
-                            <div class="font-bold text-white line-through text-sm">${item.Message}</div>
-                            <div class="text-[10px] text-green-400 font-bold mt-1">
+                        <div class="bg-gray-800 p-3 rounded-xl shadow-inner border-l-4 border-green-500 mb-2 opacity-40">
+                            <div class="text-[10px] text-gray-500 mb-1">${item.Timestamp} | ${item.Client_Name}</div>
+                            <div class="font-bold text-gray-300 line-through text-sm">${item.Message}</div>
+                            <div class="text-[10px] text-green-500 font-bold mt-1">
                                 <i class="fa-solid fa-check-double mr-1"></i>Resolved
                             </div>
                         </div>`;
                     }
                 });
-                document.getElementById('sos-container').innerHTML = html || '<p class="text-sm text-green-400 bg-gray-800 p-3 rounded font-bold">No active SOS alerts.</p>';
+                document.getElementById('sos-container').innerHTML = html || '<p class="text-sm text-green-400 bg-gray-800 p-4 rounded-xl font-bold border border-green-800">No active SOS alerts.</p>';
+                
+                // SOS Badge Update
+                if(pendingCount > 0) {
+                    document.getElementById('badge-sos').classList.remove('hidden');
+                } else {
+                    document.getElementById('badge-sos').classList.add('hidden');
+                }
             } catch (e) { console.error("Error fetching SOS", e); }
         }
 
@@ -337,73 +412,7 @@
             }
         }
 
-        // ================= RAISE AND TRACK EXPENSES =================
-        async function fetchStaffExpenses() {
-            try {
-                let res = await fetch(`${API_URL}?action=getExpenses`);
-                let data = await res.json();
-                let html = '';
-                
-                data.reverse().forEach(item => {
-                    let statusColor = item.Status === 'Pending' ? 'text-yellow-400 border-yellow-400' : (item.Status === 'Approved' ? 'text-green-400 border-green-400' : 'text-red-400 border-red-400');
-                    html += `
-                    <div class="bg-gray-800 p-3 rounded-xl flex justify-between items-center border border-gray-700 mb-3 shadow-sm">
-                        <div>
-                            <div class="font-bold text-white text-sm">${item.Item_Description}</div>
-                            <div class="text-xs text-gray-400 mt-1 font-medium">ID: ${item.Expense_ID} | <span class="text-yellow-100">${item.Amount}</span></div>
-                        </div>
-                        <div class="text-xs font-bold px-3 py-1.5 rounded-lg border ${statusColor}">${item.Status}</div>
-                    </div>`;
-                });
-                document.getElementById('staff-expenses-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No expenses raised yet.</p>';
-            } catch (e) { console.error("Error fetching staff expenses", e); }
-        }
-
-        async function submitExpenseRequest() {
-            let descInput = document.getElementById('expense-desc');
-            let amountInput = document.getElementById('expense-amount');
-            let btn = document.getElementById('expense-btn');
-            let successText = document.getElementById('expense-success');
-            
-            if(!descInput.value || !amountInput.value) {
-                alert("Please fill in both description and amount.");
-                return;
-            }
-            
-            btn.innerText = "Sending...";
-            btn.disabled = true;
-            btn.classList.replace('bg-yellow-500', 'bg-gray-500');
-            
-            try {
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ 
-                        action: 'submitExpenseRequest', 
-                        description: descInput.value, 
-                        amount: amountInput.value 
-                    }) 
-                });
-                
-                descInput.value = ''; 
-                amountInput.value = '';
-                successText.classList.remove('hidden');
-                
-                btn.innerText = "Send for Approval";
-                btn.disabled = false;
-                btn.classList.replace('bg-gray-500', 'bg-yellow-500');
-                
-                fetchStaffExpenses();
-                
-                setTimeout(() => { successText.classList.add('hidden'); }, 4000);
-            } catch (e) { 
-                alert("Error sending request."); 
-                btn.innerText = "Send for Approval"; 
-                btn.disabled = false; 
-                btn.classList.replace('bg-gray-500', 'bg-yellow-500');
-            }
-        }
-
-        // ================= GUESTS LIST (CHECK-IN & UNDO) =================
+        // ================= TAB 3: GUEST LOGISTICS (CHECK-IN & UNDO) =================
         async function fetchGuestsList() {
             try {
                 let res = await fetch(`${API_URL}?action=getGuests`);
@@ -415,27 +424,30 @@
                         html += `
                         <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center shadow-lg border border-gray-700 mb-3">
                             <div>
-                                <div class="font-bold text-white text-base">${item.Name}</div>
-                                <div class="text-xs text-gray-400 mt-1 font-medium"><i class="fa-solid fa-door-closed mr-1 text-yellow-600"></i>Rm: ${item.Room_No || 'TBD'} | 📞 ${item.Phone}</div>
+                                <div class="font-bold text-white text-base leading-tight">${item.Name}</div>
+                                <div class="text-[11px] text-gray-400 mt-1.5 font-medium">
+                                    <span class="text-yellow-500"><i class="fa-solid fa-door-closed mr-1"></i>${item.Room_No || 'TBD'}</span>
+                                    <span class="mx-1">|</span> 📞 ${item.Phone}
+                                </div>
                             </div>
-                            <button onclick="updateGuestStatus('${item.Name}', 'Checked In', this)" class="bg-yellow-500 text-black text-xs font-bold px-4 py-2.5 rounded-lg shadow hover:bg-yellow-400 transition">
+                            <button onclick="updateGuestStatus('${item.Name}', 'Checked In', this)" class="bg-yellow-500 text-black text-xs font-bold px-4 py-2.5 rounded-lg shadow hover:bg-yellow-400 transition ml-2">
                                 Check In
                             </button>
                         </div>`;
                     } else {
                         html += `
-                        <div class="bg-gray-900 p-3 rounded-xl flex justify-between items-center border border-green-800 mb-3 opacity-80 shadow-inner">
+                        <div class="bg-gray-900 p-3 rounded-xl flex justify-between items-center border border-green-800 mb-3 opacity-70 shadow-inner">
                             <div>
-                                <div class="font-bold text-green-400 text-sm">${item.Name} <i class="fa-solid fa-check-circle text-[10px] ml-1"></i></div>
-                                <div class="text-[10px] text-gray-500 mt-1">Checked In</div>
+                                <div class="font-bold text-green-500 text-sm">${item.Name} <i class="fa-solid fa-circle-check text-[10px] ml-1"></i></div>
+                                <div class="text-[10px] text-gray-500 mt-0.5">Checked In</div>
                             </div>
-                            <button onclick="updateGuestStatus('${item.Name}', 'Arriving', this)" class="bg-gray-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-gray-600 transition">
+                            <button onclick="updateGuestStatus('${item.Name}', 'Arriving', this)" class="bg-gray-700 text-white text-[10px] font-bold px-3 py-2 rounded-lg hover:bg-gray-600 transition">
                                 <i class="fa-solid fa-rotate-left mr-1"></i>Undo
                             </button>
                         </div>`;
                     }
                 });
-                document.getElementById('all-guests-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No guests found.</p>';
+                document.getElementById('all-guests-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No guests found in database.</p>';
             } catch (e) { console.error("Error fetching guests", e); }
         }
 
@@ -454,7 +466,7 @@
             }
         }
 
-        // ================= VENDOR CONTROL =================
+        // ================= TAB 4: VENDOR CONTROL =================
         async function fetchVendorsList() {
             try {
                 let res = await fetch(`${API_URL}?action=getVendors`);
@@ -464,19 +476,21 @@
                 data.forEach(item => {
                     let btnHtml = '';
                     if(!item.Status.includes('On-Site')) {
-                        btnHtml = `<button onclick="updateVendor('${item.Name}', 'On-Site')" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-500 transition shadow">Mark On-Site</button>`;
+                        btnHtml = `<button onclick="updateVendor('${item.Name}', 'On-Site')" class="bg-blue-600 text-white text-[11px] font-bold px-4 py-2.5 rounded-lg hover:bg-blue-500 transition shadow">Mark On-Site</button>`;
                     } else {
-                        btnHtml = `<button onclick="updateVendor('${item.Name}', 'Pending')" class="bg-gray-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-gray-600 transition"><i class="fa-solid fa-rotate-left mr-1"></i>Undo</button>`;
+                        btnHtml = `<button onclick="updateVendor('${item.Name}', 'Pending')" class="bg-gray-700 text-white text-[10px] font-bold px-3 py-2 rounded-lg hover:bg-gray-600 transition"><i class="fa-solid fa-rotate-left mr-1"></i>Undo</button>`;
                     }
 
                     html += `
                     <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center border border-gray-700 mb-3 shadow-sm">
                         <div>
-                            <div class="text-[10px] text-blue-400 font-bold uppercase tracking-wide">${item.Service}</div>
+                            <div class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-1">${item.Service}</div>
                             <div class="font-bold text-white text-base mt-0.5">${item.Name}</div>
-                            <div class="text-xs text-gray-400 mt-1 font-medium">${item.Status}</div>
+                            <div class="text-[11px] text-gray-400 mt-1 font-medium"><i class="fa-solid fa-phone mr-1"></i>${item.Phone}</div>
                         </div>
-                        ${btnHtml}
+                        <div class="ml-2">
+                            ${btnHtml}
+                        </div>
                     </div>`;
                 });
                 document.getElementById('vendor-control-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No vendors found.</p>';
@@ -491,6 +505,79 @@
                 });
                 fetchVendorsList();
             } catch (e) { alert("Error updating vendor status."); }
+        }
+
+        // ================= TAB 5: RAISE AND TRACK EXPENSES =================
+        async function fetchStaffExpenses() {
+            try {
+                let res = await fetch(`${API_URL}?action=getExpenses`);
+                let data = await res.json();
+                let html = '';
+                
+                data.reverse().forEach(item => {
+                    let statusColor = item.Status === 'Pending' ? 'text-yellow-500 border-yellow-500 bg-yellow-500/10' : (item.Status === 'Approved' ? 'text-green-400 border-green-400 bg-green-400/10' : 'text-red-400 border-red-400 bg-red-400/10');
+                    
+                    html += `
+                    <div class="bg-gray-800 p-4 rounded-xl flex justify-between items-center border border-gray-700 mb-3 shadow-sm">
+                        <div>
+                            <div class="font-bold text-white text-sm mb-1">${item.Item_Description}</div>
+                            <div class="text-[11px] text-gray-400 font-medium">Ref: ${item.Expense_ID}</div>
+                        </div>
+                        <div class="text-right ml-2">
+                            <div class="text-sm font-bold text-white mb-1">${item.Amount}</div>
+                            <div class="text-[10px] font-bold px-2 py-1 rounded border ${statusColor} inline-block uppercase tracking-wider">${item.Status}</div>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('staff-expenses-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No expenses raised yet.</p>';
+            } catch (e) { console.error("Error fetching staff expenses", e); }
+        }
+
+        async function submitExpenseRequest() {
+            let descInput = document.getElementById('expense-desc');
+            let amountInput = document.getElementById('expense-amount');
+            let btn = document.getElementById('expense-btn');
+            let successText = document.getElementById('expense-success');
+            
+            if(!descInput.value || !amountInput.value) {
+                alert("Please fill in both description and amount.");
+                return;
+            }
+            
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending...`;
+            btn.disabled = true;
+            btn.classList.replace('bg-yellow-500', 'bg-gray-600');
+            btn.classList.add('text-white');
+            
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: 'submitExpenseRequest', 
+                        description: descInput.value, 
+                        amount: amountInput.value 
+                    }) 
+                });
+                
+                descInput.value = ''; 
+                amountInput.value = '';
+                successText.classList.remove('hidden');
+                
+                btn.innerHTML = `Send for Approval`;
+                btn.disabled = false;
+                btn.classList.replace('bg-gray-600', 'bg-yellow-500');
+                btn.classList.remove('text-white');
+                
+                fetchStaffExpenses();
+                
+                setTimeout(() => { successText.classList.add('hidden'); }, 4000);
+            } catch (e) { 
+                alert("Error sending request."); 
+                btn.innerHTML = `Send for Approval`; 
+                btn.disabled = false; 
+                btn.classList.replace('bg-gray-600', 'bg-yellow-500');
+                btn.classList.remove('text-white');
+            }
         }
     </script>
 </body>
