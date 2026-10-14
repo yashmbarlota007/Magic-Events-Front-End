@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic Events - Client Portal</title>
+    <!-- Tailwind CSS for Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 font-sans antialiased text-gray-800 pb-20">
@@ -17,19 +19,19 @@
             <div class="text-xl font-bold">
                 <i class="fa-solid fa-ring mr-2"></i>Magic Events
             </div>
-            <div class="text-sm font-medium bg-indigo-700 px-3 py-1 rounded-full shadow-inner">
-                Yash Family
+            <div class="text-sm font-medium bg-indigo-700 px-3 py-1 rounded-full shadow-inner" id="client-family-name">
+                Host Family
             </div>
         </nav>
 
         <div class="max-w-md mx-auto p-4 pt-20">
             
             <!-- ========================================================================= -->
-            <!-- 1. HOME SCREEN (Dashboard, SOS, Venue, Itinerary) -->
+            <!-- 1. HOME SCREEN (Dashboard, Venue, SOS, Itinerary) -->
             <!-- ========================================================================= -->
             <div id="screen-home" class="app-screen">
                 
-                <!-- Main Venue Navigation Card -->
+                <!-- Main Venue Navigation Card (Fetches from Master Data) -->
                 <div id="main-venue-card" class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-lg mb-6 text-white hidden">
                     <div class="flex justify-between items-center">
                         <div>
@@ -85,7 +87,7 @@
             </div>
 
             <!-- ========================================================================= -->
-            <!-- 2. LIVE EXECUTION FEED SCREEN (NEW) -->
+            <!-- 2. LIVE EXECUTION FEED SCREEN -->
             <!-- ========================================================================= -->
             <div id="screen-live" class="app-screen hidden">
                 <div class="flex justify-between items-end mb-6">
@@ -117,7 +119,9 @@
                             </tr>
                         </thead>
                         <tbody id="guest-container" class="divide-y divide-gray-100">
-                            <tr><td colspan="2" class="p-4 text-gray-500 italic">Loading guests...</td></tr>
+                            <tr>
+                                <td colspan="2" class="p-4 text-gray-500 italic">Loading guests...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -168,8 +172,6 @@
             <div onclick="switchTab('live')" id="tab-live" class="nav-tab flex flex-col items-center justify-center text-gray-400 w-1/5 py-1 cursor-pointer transition relative">
                 <i class="fa-solid fa-bolt text-lg mb-1"></i>
                 <span>Live</span>
-                <span class="absolute top-1 right-3 bg-rose-500 rounded-full w-2 h-2 animate-ping"></span>
-                <span class="absolute top-1 right-3 bg-rose-500 rounded-full w-2 h-2"></span>
             </div>
             
             <div onclick="switchTab('guests')" id="tab-guests" class="nav-tab flex flex-col items-center justify-center text-gray-400 w-1/5 py-1 cursor-pointer transition">
@@ -195,12 +197,13 @@
     <!-- JAVASCRIPT LOGIC & API CALLS -->
     <!-- ========================================================================= -->
     <script>
+        // The API URL from your deployed Google Apps Script
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
 
-        // Auto-Load and Background Sync (Every 2 Minutes)
+        // Auto-Load Data on Startup and Background Sync (Every 2 Minutes)
         window.onload = () => {
             loadAllData();
-            setInterval(loadAllData, 120000); // 120,000 ms = 2 minutes
+            setInterval(loadAllData, 120000); // 120,000 milliseconds = 2 minutes
         };
 
         // Tab Switching Logic
@@ -208,7 +211,7 @@
             // Hide all screens
             document.querySelectorAll('.app-screen').forEach(s => s.classList.add('hidden'));
             
-            // Show target screen
+            // Show the selected screen
             document.getElementById('screen-' + tabName).classList.remove('hidden');
             
             // Reset all tab colors to gray
@@ -217,13 +220,13 @@
                 t.classList.add('text-gray-400'); 
             });
             
-            // Highlight active tab
+            // Highlight the active tab
             let act = document.getElementById('tab-' + tabName);
             act.classList.remove('text-gray-400'); 
             act.classList.add('text-indigo-600');
         }
 
-        // Master Fetch Function
+        // Master Fetch Function to Load All Modules
         function loadAllData() {
             fetchMasterData();
             fetchDashboard(); 
@@ -237,7 +240,7 @@
         }
 
         // ---------------------------------------------------------------------
-        // 1. MASTER DATA (Main Venue Map Link)
+        // 1. MASTER DATA (Venue Links & Family Name)
         // ---------------------------------------------------------------------
         async function fetchMasterData() {
             try {
@@ -252,8 +255,14 @@
                         document.getElementById('main-venue-link').href = item.Value;
                         document.getElementById('main-venue-card').classList.remove('hidden');
                     }
+                    if (item.Key === 'Bride_Groom_Name' && item.Value) {
+                        // Display the couple's name in the top navigation
+                        document.getElementById('client-family-name').innerText = item.Value;
+                    }
                 });
-            } catch(e) { console.error("Error fetching master data", e); }
+            } catch(e) { 
+                console.error("Error fetching master data", e); 
+            }
         }
 
         // ---------------------------------------------------------------------
@@ -265,10 +274,16 @@
                 let data = await res.json();
                 
                 data.forEach(item => {
-                    if(item.Metric === 'Total Rooms') document.getElementById('stat-total-rooms').innerText = item.Value;
-                    if(item.Metric === 'Checked-In') document.getElementById('stat-checked-in').innerText = item.Value;
+                    if(item.Metric === 'Total Rooms') {
+                        document.getElementById('stat-total-rooms').innerText = item.Value;
+                    }
+                    if(item.Metric === 'Checked-In') {
+                        document.getElementById('stat-checked-in').innerText = item.Value;
+                    }
                 });
-            } catch(e) { console.error("Error fetching dashboard", e); }
+            } catch(e) { 
+                console.error("Error fetching dashboard", e); 
+            }
         }
 
         // ---------------------------------------------------------------------
@@ -287,7 +302,7 @@
                     let stIcon = isResolved ? 'fa-check-double' : 'fa-clock';
                     
                     html += `
-                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 text-xs flex justify-between items-center">
+                    <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 text-xs flex justify-between items-center mb-2">
                         <span class="font-bold text-gray-700 truncate w-2/3">${item.Message}</span>
                         <span class="${stColor} font-bold px-2 py-1 rounded-md border ${isResolved ? 'border-green-100' : 'border-orange-100'}">
                             <i class="fa-solid ${stIcon} mr-1"></i>${st}
@@ -296,7 +311,9 @@
                 });
                 
                 document.getElementById('client-sos-history').innerHTML = html || '<p class="text-xs text-gray-500 italic">No requests sent yet.</p>';
-            } catch(e) { console.error("Error fetching SOS history", e); }
+            } catch(e) { 
+                console.error("Error fetching SOS history", e); 
+            }
         }
 
         async function sendSOS() {
@@ -313,16 +330,26 @@
             btn.disabled = true;
             
             try {
+                // Determine family name to send with SOS
+                let familyNameText = document.getElementById('client-family-name').innerText;
+                if(!familyNameText || familyNameText === 'Host Family') {
+                    familyNameText = 'Yash Family'; // Fallback
+                }
+
                 await fetch(API_URL, { 
                     method: 'POST', 
-                    body: JSON.stringify({ action: 'submitSOS', clientName: 'Yash Family', message: msgInput.value }) 
+                    body: JSON.stringify({ 
+                        action: 'submitSOS', 
+                        clientName: familyNameText, 
+                        message: msgInput.value 
+                    }) 
                 });
                 
                 msgInput.value = '';
                 btn.innerText = "Sent Successfully!";
                 btn.classList.replace('bg-gray-400', 'bg-green-600');
                 
-                fetchClientSOS(); // Refresh immediately
+                fetchClientSOS(); // Refresh SOS history immediately
                 
                 setTimeout(() => { 
                     btn.innerText = "Send Request to Manager"; 
@@ -368,12 +395,15 @@
                         ${mapHtml}
                     </div>`; 
                 });
+                
                 document.getElementById('itinerary-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No events scheduled.</p>';
-            } catch(e) { console.error("Error fetching itinerary", e); }
+            } catch(e) { 
+                console.error("Error fetching itinerary", e); 
+            }
         }
 
         // ---------------------------------------------------------------------
-        // 5. LIVE SHOWFLOW EXECUTION & PROOF ENGINE (NEW)
+        // 5. LIVE SHOWFLOW EXECUTION & PROOF FEED
         // ---------------------------------------------------------------------
         async function fetchShowflowClient() {
             try {
@@ -383,7 +413,7 @@
                 
                 data.forEach(item => {
                     if (item.Status === 'Completed') {
-                        // Actionable Reaction Logic
+                        // Logic for Reaction Button vs Liked State
                         let reactionHtml = '';
                         if (item.Client_Reaction) {
                             reactionHtml = `<div class="text-rose-500 font-bold text-xs flex items-center bg-rose-50 px-3 py-1.5 rounded-full"><i class="fa-solid fa-heart mr-1.5 animate-pulse"></i>Loved It</div>`;
@@ -393,20 +423,22 @@
                         
                         html += `
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-5">
-                            <!-- Task Header -->
+                            <!-- Header showing Task Name -->
                             <div class="p-4 border-b border-gray-50 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
-                                <div class="font-bold text-gray-800 text-base leading-tight">${item.Task}</div>
+                                <div>
+                                    <div class="font-bold text-gray-800 text-base leading-tight">${item.Task}</div>
+                                </div>
                                 <div class="text-[10px] text-green-700 font-bold bg-green-100 px-2.5 py-1 rounded-md border border-green-200">
                                     <i class="fa-solid fa-check-double mr-1"></i>Done
                                 </div>
                             </div>
                             
-                            <!-- Photographic Proof -->
+                            <!-- Display Photo from Google Drive -->
                             <div class="relative bg-gray-100">
                                 <img src="${item.Proof_URL}" alt="Execution Proof" class="w-full h-56 object-cover" onerror="this.src='https://via.placeholder.com/800x400?text=Image+Processing...'">
                             </div>
                             
-                            <!-- Timestamp & Reaction Footer -->
+                            <!-- Footer with Timestamp & Heart Reaction -->
                             <div class="p-4 flex justify-between items-center bg-white">
                                 <div>
                                     <div class="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-0.5">Executed At</div>
@@ -416,7 +448,7 @@
                             </div>
                         </div>`;
                     } else {
-                        // Pending Tasks Context
+                        // Display Pending Tasks clearly
                         html += `
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-dashed border-gray-300 mb-3 flex items-center opacity-60">
                             <div class="bg-gray-100 w-10 h-10 rounded-full flex justify-center items-center mr-4 text-gray-400 text-lg">
@@ -431,11 +463,13 @@
                 });
                 
                 document.getElementById('showflow-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No execution tasks available.</p>';
-            } catch(e) { console.error("Error fetching showflow feed", e); }
+            } catch(e) { 
+                console.error("Error fetching showflow feed", e); 
+            }
         }
 
         async function reactToTask(taskId, btnElement) {
-            // Optimistic UI Update
+            // Optimistic UI Update - immediately show the heart
             btnElement.outerHTML = `<div class="text-rose-500 font-bold text-xs flex items-center bg-rose-50 px-3 py-1.5 rounded-full border border-rose-100"><i class="fa-solid fa-heart mr-1.5"></i>Loved It</div>`;
             
             try {
@@ -449,7 +483,7 @@
         }
 
         // ---------------------------------------------------------------------
-        // 6. GUEST LOGISTICS
+        // 6. GUEST LOGISTICS (Arrival & Check-in Details)
         // ---------------------------------------------------------------------
         async function fetchGuests() {
             try {
@@ -475,11 +509,13 @@
                 });
                 
                 document.getElementById('guest-container').innerHTML = html || '<tr><td colspan="2" class="p-4 text-gray-500 italic">No guests found.</td></tr>';
-            } catch(e) { console.error("Error fetching guests", e); }
+            } catch(e) { 
+                console.error("Error fetching guests", e); 
+            }
         }
 
         // ---------------------------------------------------------------------
-        // 7. VAULT & VENDORS (OPS)
+        // 7. VAULT & VENDORS (Operations)
         // ---------------------------------------------------------------------
         async function fetchVault() {
             try {
@@ -496,7 +532,9 @@
                 });
                 
                 document.getElementById('vault-container').innerHTML = html || '<p class="text-sm text-gray-500 col-span-2 italic">No documents in vault.</p>';
-            } catch(e) { console.error("Error fetching vault", e); }
+            } catch(e) { 
+                console.error("Error fetching vault", e); 
+            }
         }
 
         async function fetchVendors() {
@@ -520,11 +558,13 @@
                 });
                 
                 document.getElementById('vendors-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No vendors found.</p>';
-            } catch(e) { console.error("Error fetching vendors", e); }
+            } catch(e) { 
+                console.error("Error fetching vendors", e); 
+            }
         }
 
         // ---------------------------------------------------------------------
-        // 8. EXTRA EXPENSE APPROVALS
+        // 8. FINANCIAL APPROVALS (Extra Expenses)
         // ---------------------------------------------------------------------
         async function fetchExpenses() {
             try {
@@ -573,17 +613,19 @@
                 
                 document.getElementById('expenses-container').innerHTML = html || '<p class="text-sm text-green-600 font-bold bg-green-50 p-4 rounded-xl border border-green-200">No pending approvals required.</p>';
                 
-                // Update Notification Badge on Nav Bar
+                // Update Notification Badge on Nav Bar for pending approvals
                 if (pendingCount > 0) {
                     document.getElementById('badge-approvals').classList.remove('hidden');
                 } else {
                     document.getElementById('badge-approvals').classList.add('hidden');
                 }
-            } catch(e) { console.error("Error fetching expenses", e); }
+            } catch(e) { 
+                console.error("Error fetching expenses", e); 
+            }
         }
 
         async function updateExpense(id, newStatus) {
-            // Optimistic UI dimming
+            // Optimistic UI dimming to show action registered
             document.getElementById(`exp-${id}`).style.opacity = '0.5';
             
             try {
@@ -591,7 +633,7 @@
                     method: 'POST', 
                     body: JSON.stringify({ action: 'updateExpenseStatus', expenseId: id, newStatus: newStatus }) 
                 });
-                // Refresh list automatically
+                // Refresh list automatically after updating
                 fetchExpenses(); 
             } catch (e) { 
                 alert("Error updating status. Please check your network."); 
