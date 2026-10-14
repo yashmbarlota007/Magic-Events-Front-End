@@ -7,9 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-900 font-sans text-gray-100">
+<body class="bg-gray-900 font-sans text-gray-100 pb-10">
 
-    <!-- STAFF LOGIN SCREEN -->
+    <!-- ================= STAFF LOGIN SCREEN ================= -->
     <div id="login-screen" class="fixed inset-0 bg-gray-900 z-50 flex flex-col justify-center items-center p-6">
         <i class="fa-solid fa-user-shield text-5xl text-yellow-400 mb-4"></i>
         <h1 class="text-2xl font-bold mb-2 text-white">Staff Portal</h1>
@@ -22,30 +22,70 @@
         <p id="login-error" class="text-red-400 text-sm mt-3 hidden">Invalid details. Contact Admin.</p>
     </div>
 
-    <!-- MAIN APP -->
+    <!-- ================= MAIN APP DASHBOARD ================= -->
     <div id="app-content" class="hidden">
-        <nav class="bg-black text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2">
-            <div class="text-sm font-bold text-yellow-400"><i class="fa-solid fa-user-check mr-2"></i><span id="logged-in-user">Staff</span></div>
-            <button onclick="logout()" class="text-xs text-red-400"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
+        
+        <!-- Top Navigation -->
+        <nav class="bg-black text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2 border-b border-gray-800">
+            <div class="text-sm font-bold text-yellow-400">
+                <i class="fa-solid fa-user-check mr-2"></i><span id="logged-in-user">Staff</span>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="fetchData()" class="text-xs text-blue-400"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button>
+                <button onclick="logout()" class="text-xs text-red-400"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
+            </div>
         </nav>
 
-        <div class="max-w-md mx-auto p-4 pt-20 pb-10">
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Live SOS Alerts</h2>
-            <div id="sos-container" class="space-y-2 mb-6"><p class="text-xs text-gray-500">Checking for alerts...</p></div>
+        <div class="max-w-md mx-auto p-4 pt-20">
+            
+            <!-- Live SOS Alerts -->
+            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i>Live SOS Alerts
+            </h2>
+            <div id="sos-container" class="space-y-2 mb-8">
+                <p class="text-xs text-gray-500">Checking for alerts...</p>
+            </div>
 
-            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-clipboard-check mr-2"></i>Pending Arrivals</h2>
-            <div id="pending-guests-container" class="space-y-3"><p class="text-xs text-gray-500">Loading guests...</p></div>
+            <!-- RAISE EXPENSE REQUEST (NEW SECTION) -->
+            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
+                <i class="fa-solid fa-file-invoice-dollar mr-2"></i>Raise Expense Request
+            </h2>
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-8">
+                <p class="text-xs text-gray-400 mb-3">Send out-of-scope expenses to client for approval.</p>
+                
+                <input type="text" id="expense-desc" placeholder="Item Description (e.g., 50 Extra Plates)" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white mb-3 text-sm focus:outline-none focus:border-yellow-400">
+                
+                <input type="text" id="expense-amount" placeholder="Amount (e.g., ₹15,000)" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white mb-4 text-sm focus:outline-none focus:border-yellow-400">
+                
+                <button onclick="submitExpenseRequest()" id="expense-btn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg shadow hover:bg-yellow-400 transition text-sm">
+                    Send for Approval
+                </button>
+                <p id="expense-success" class="text-green-400 text-xs mt-2 hidden text-center font-bold">Request Sent to Client!</p>
+            </div>
+
+            <!-- Guest Check-in Engine -->
+            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
+                <i class="fa-solid fa-clipboard-check mr-2"></i>Pending Arrivals
+            </h2>
+            <div id="pending-guests-container" class="space-y-3">
+                <p class="text-xs text-gray-500">Loading guests...</p>
+            </div>
+
         </div>
     </div>
 
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
         let currentStaffName = localStorage.getItem('magic_staff_name');
 
         window.onload = () => {
-            if (currentStaffName) showApp();
+            if (currentStaffName) {
+                showApp();
+            }
         };
 
+        // Authentication Logic
         async function staffLogin() {
             const mobile = document.getElementById('login-mobile').value;
             const pin = document.getElementById('login-pin').value;
@@ -88,48 +128,126 @@
         }
 
         function fetchData() {
-            fetchSOS(); fetchPendingGuests();
+            fetchSOS(); 
+            fetchPendingGuests();
         }
 
+        // Fetch SOS Alerts
         async function fetchSOS() {
-            let data = await (await fetch(`${API_URL}?action=getSOS`)).json();
-            let html = '';
-            data.reverse().forEach(item => {
-                html += `<div class="bg-gray-800 p-3 rounded shadow border-l-4 border-red-500"><div class="text-xs text-gray-400 mb-1">${item.Timestamp} | ${item.Client_Name}</div><div class="font-bold text-white">${item.Message}</div></div>`;
-            });
-            document.getElementById('sos-container').innerHTML = html || '<p class="text-sm text-green-400">No active SOS alerts.</p>';
-        }
-
-        async function fetchPendingGuests() {
-            let data = await (await fetch(`${API_URL}?action=getGuests`)).json();
-            let html = '';
-            data.forEach(item => {
-                if(item.Status !== 'Checked In') {
+            try {
+                let res = await fetch(`${API_URL}?action=getSOS`);
+                let data = await res.json();
+                let html = '';
+                
+                // Reverse array to show latest alerts first
+                data.reverse().forEach(item => {
                     html += `
-                    <div class="bg-gray-800 p-3 rounded flex justify-between items-center shadow-lg border border-gray-700">
-                        <div>
-                            <div class="font-bold">${item.Name}</div>
-                            <div class="text-xs text-gray-400">Rm: ${item.Room_No || 'TBD'} | 📞 ${item.Phone}</div>
-                        </div>
-                        <button onclick="markCheckedIn('${item.Name}', this)" class="bg-yellow-500 text-black text-xs font-bold px-3 py-2 rounded shadow hover:bg-yellow-400 transition">Check In</button>
+                    <div class="bg-gray-800 p-3 rounded shadow border-l-4 border-red-500">
+                        <div class="text-xs text-gray-400 mb-1">${item.Timestamp} | ${item.Client_Name}</div>
+                        <div class="font-bold text-white">${item.Message}</div>
                     </div>`;
-                }
-            });
-            document.getElementById('pending-guests-container').innerHTML = html || '<p class="text-sm text-green-400">All guests checked in!</p>';
+                });
+                document.getElementById('sos-container').innerHTML = html || '<p class="text-sm text-green-400 bg-gray-800 p-3 rounded">No active SOS alerts.</p>';
+            } catch (e) {
+                console.error(e);
+            }
         }
 
+        // Fetch Pending Guests for Check-in
+        async function fetchPendingGuests() {
+            try {
+                let res = await fetch(`${API_URL}?action=getGuests`);
+                let data = await res.json();
+                let html = '';
+                
+                data.forEach(item => {
+                    if(item.Status !== 'Checked In') {
+                        html += `
+                        <div class="bg-gray-800 p-3 rounded flex justify-between items-center shadow-lg border border-gray-700">
+                            <div>
+                                <div class="font-bold text-white">${item.Name}</div>
+                                <div class="text-xs text-gray-400 mt-1">Rm: ${item.Room_No || 'TBD'} | 📞 ${item.Phone}</div>
+                            </div>
+                            <button onclick="markCheckedIn('${item.Name}', this)" class="bg-yellow-500 text-black text-xs font-bold px-4 py-2 rounded shadow hover:bg-yellow-400 transition">Check In</button>
+                        </div>`;
+                    }
+                });
+                document.getElementById('pending-guests-container').innerHTML = html || '<p class="text-sm text-green-400 bg-gray-800 p-3 rounded">All guests are checked in!</p>';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Mark Guest as Checked In
         async function markCheckedIn(guestName, btnElement) {
             btnElement.innerText = "Processing...";
             btnElement.disabled = true;
+            btnElement.classList.replace('bg-yellow-500', 'bg-gray-500');
             
-            await fetch(API_URL, { 
-                method: 'POST', 
-                body: JSON.stringify({ action: 'checkInGuest', guestName: guestName, staffName: currentStaffName }) 
-            });
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'checkInGuest', guestName: guestName, staffName: currentStaffName }) 
+                });
+                
+                btnElement.innerText = "Done";
+                btnElement.classList.replace('bg-gray-500', 'bg-green-500');
+                
+                // Refresh list after 1 second
+                setTimeout(fetchData, 1000);
+            } catch (e) {
+                alert("Error checking in guest. Try again.");
+                btnElement.innerText = "Check In";
+                btnElement.disabled = false;
+                btnElement.classList.replace('bg-gray-500', 'bg-yellow-500');
+            }
+        }
+
+        // Submit New Expense Request (NEW FUNCTION)
+        async function submitExpenseRequest() {
+            let descInput = document.getElementById('expense-desc');
+            let amountInput = document.getElementById('expense-amount');
+            let btn = document.getElementById('expense-btn');
+            let successText = document.getElementById('expense-success');
             
-            btnElement.innerText = "Done";
-            btnElement.classList.replace('bg-yellow-500', 'bg-green-500');
-            setTimeout(fetchData, 1000);
+            if(!descInput.value || !amountInput.value) {
+                alert("Please fill in both description and amount.");
+                return;
+            }
+            
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+            btn.classList.replace('bg-yellow-500', 'bg-gray-500');
+            
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: 'submitExpenseRequest', 
+                        description: descInput.value,
+                        amount: amountInput.value
+                    }) 
+                });
+                
+                // Reset form
+                descInput.value = '';
+                amountInput.value = '';
+                successText.classList.remove('hidden');
+                
+                btn.innerText = "Send for Approval";
+                btn.disabled = false;
+                btn.classList.replace('bg-gray-500', 'bg-yellow-500');
+                
+                setTimeout(() => { 
+                    successText.classList.add('hidden'); 
+                }, 4000);
+                
+            } catch (e) {
+                alert("Error sending request. Please check connection.");
+                btn.innerText = "Send for Approval";
+                btn.disabled = false;
+                btn.classList.replace('bg-gray-500', 'bg-yellow-500');
+            }
         }
     </script>
 </body>
