@@ -9,113 +9,136 @@
 </head>
 <body class="bg-gray-50 font-sans antialiased text-gray-800">
 
-    <!-- Top Navigation -->
-    <nav class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto">
-        <div class="text-xl font-bold"><i class="fa-solid fa-ring mr-2"></i>Magic Events</div>
-        <div class="text-sm">Welcome, Yash Family</div>
-    </nav>
+    <div id="app-content">
+        <!-- Top Navigation -->
+        <nav class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2">
+            <div class="text-xl font-bold"><i class="fa-solid fa-ring mr-2"></i>Magic Events</div>
+            <div class="text-sm font-medium">Yash Family</div>
+        </nav>
 
-    <!-- Main Container -->
-    <div class="max-w-md mx-auto p-4 pt-20 pb-20">
-
-        <!-- ================= HOME SCREEN ================= -->
-        <div id="screen-home" class="app-screen">
-            <h2 class="text-lg font-bold mb-3 text-gray-700">Live Logistics</h2>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-indigo-500">
-                    <p class="text-xs text-gray-500">Total Rooms</p>
-                    <h3 class="text-2xl font-bold text-indigo-600" id="stat-total-rooms">--</h3>
+        <div class="max-w-md mx-auto p-4 pt-20 pb-24">
+            
+            <!-- ================= HOME SCREEN ================= -->
+            <div id="screen-home" class="app-screen">
+                <!-- Dashboard Metrics -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-indigo-500">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Total Rooms</p>
+                        <h3 class="text-2xl font-bold text-indigo-600" id="stat-total-rooms">--</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Checked-In</p>
+                        <h3 class="text-2xl font-bold text-green-600" id="stat-checked-in">--</h3>
+                    </div>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
-                    <p class="text-xs text-gray-500">Checked-In</p>
-                    <h3 class="text-2xl font-bold text-green-600" id="stat-checked-in">--</h3>
+
+                <!-- Emergency SOS Section -->
+                <div class="bg-red-50 p-4 rounded-xl shadow mb-6 border border-red-200">
+                    <h2 class="text-sm font-bold text-red-700 mb-2"><i class="fa-solid fa-bell mr-2"></i>Quick Request (SOS)</h2>
+                    <input type="text" id="sos-message" placeholder="E.g., Need 2 water bottles in Room 101" class="w-full p-3 rounded border border-gray-300 mb-2 text-sm focus:outline-none focus:border-red-400">
+                    <button onclick="sendSOS()" id="sos-btn" class="w-full bg-red-600 text-white font-bold py-3 rounded shadow hover:bg-red-700 transition">Send Request to Manager</button>
+                </div>
+
+                <!-- Dynamic Itinerary -->
+                <h2 class="text-lg font-bold mb-3 text-gray-700">Today's Itinerary</h2>
+                <div class="space-y-3" id="itinerary-container">
+                    <p class="text-sm text-gray-500">Loading schedule...</p>
                 </div>
             </div>
 
-            <!-- Emergency SOS Section -->
-            <div class="bg-red-50 p-4 rounded-xl shadow mb-6 border border-red-200">
-                <h2 class="text-lg font-bold text-red-700 mb-2"><i class="fa-solid fa-bell mr-2"></i>Quick Request (SOS)</h2>
-                <input type="text" id="sos-message" placeholder="E.g., Send 5 water bottles to Room 101" class="w-full p-2 rounded border border-gray-300 mb-2 text-sm">
-                <button onclick="sendSOS()" class="w-full bg-red-600 text-white font-bold py-2 rounded shadow hover:bg-red-700 transition">Send to Event Manager</button>
-                <p id="sos-status" class="text-xs text-green-600 mt-2 hidden">Request Sent Successfully!</p>
+            <!-- ================= GUESTS SCREEN ================= -->
+            <div id="screen-guests" class="app-screen hidden">
+                <h2 class="text-lg font-bold mb-3 text-gray-700">Guest Logistics</h2>
+                <div class="bg-white rounded-xl shadow overflow-hidden">
+                    <table class="min-w-full text-left text-sm">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="p-3 font-bold text-gray-600">Guest Info</th>
+                                <th class="p-3 font-bold text-gray-600">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="guest-container" class="divide-y divide-gray-200">
+                            <tr><td colspan="2" class="p-3 text-gray-500">Loading guests...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- Dynamic Itinerary -->
-            <h2 class="text-lg font-bold mb-3 text-gray-700">Today's Itinerary</h2>
-            <div class="space-y-3 mb-6" id="itinerary-container">
-                <p class="text-sm text-gray-500">Loading schedule...</p>
-            </div>
-        </div>
-
-        <!-- ================= GUESTS SCREEN (Advanced Logistics) ================= -->
-        <div id="screen-guests" class="app-screen hidden">
-            <h2 class="text-lg font-bold mb-3 text-gray-700">Hospitality Engine</h2>
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <table class="min-w-full text-left text-sm">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="p-3">Guest Info</th>
-                            <th class="p-3">Logistics</th>
-                        </tr>
-                    </thead>
-                    <tbody id="guest-container" class="divide-y divide-gray-200">
-                        <tr><td colspan="2" class="p-3 text-gray-500">Loading guests...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ================= OPS SCREEN (Vendors & Vault) ================= -->
-        <div id="screen-ops" class="app-screen hidden">
-            <h2 class="text-lg font-bold mb-3 text-gray-700">Digital Vault</h2>
-            <div class="grid grid-cols-2 gap-3 mb-6" id="vault-container">
-                <p class="text-sm text-gray-500">Loading documents...</p>
+            <!-- ================= OPS SCREEN ================= -->
+            <div id="screen-ops" class="app-screen hidden">
+                <h2 class="text-lg font-bold mb-3 text-gray-700">Digital Vault</h2>
+                <div class="grid grid-cols-2 gap-3 mb-6" id="vault-container">
+                    <p class="text-sm text-gray-500 col-span-2">Loading documents...</p>
+                </div>
+                
+                <h2 class="text-lg font-bold mb-3 text-gray-700">Vendor Status</h2>
+                <div class="space-y-3" id="vendors-container">
+                    <p class="text-sm text-gray-500">Loading vendors...</p>
+                </div>
             </div>
 
-            <h2 class="text-lg font-bold mb-3 text-gray-700">Vendor POCs</h2>
-            <div class="space-y-3" id="vendors-container">
-                <p class="text-sm text-gray-500">Loading vendors...</p>
+            <!-- ================= APPROVALS SCREEN ================= -->
+            <div id="screen-approvals" class="app-screen hidden">
+                <h2 class="text-lg font-bold mb-1 text-gray-700">Pending Approvals</h2>
+                <p class="text-xs text-gray-500 mb-4">Approve or reject out-of-scope event expenses here.</p>
+                <div class="space-y-3" id="expenses-container">
+                    <p class="text-sm text-gray-500">Loading expenses...</p>
+                </div>
             </div>
         </div>
 
+        <!-- ================= BOTTOM NAVIGATION ================= -->
+        <div class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around p-3 text-[10px] font-bold z-10 left-1/2 -translate-x-1/2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+            <div onclick="switchTab('home')" id="tab-home" class="nav-tab text-center text-indigo-600 cursor-pointer w-1/4">
+                <i class="fa-solid fa-home text-lg block mb-1"></i>Home
+            </div>
+            <div onclick="switchTab('guests')" id="tab-guests" class="nav-tab text-center text-gray-400 cursor-pointer w-1/4">
+                <i class="fa-solid fa-plane-arrival text-lg block mb-1"></i>Guests
+            </div>
+            <div onclick="switchTab('ops')" id="tab-ops" class="nav-tab text-center text-gray-400 cursor-pointer w-1/4">
+                <i class="fa-solid fa-briefcase text-lg block mb-1"></i>Ops
+            </div>
+            <div onclick="switchTab('approvals')" id="tab-approvals" class="nav-tab text-center text-gray-400 cursor-pointer w-1/4 relative">
+                <i class="fa-solid fa-check-double text-lg block mb-1"></i>Approvals
+                <span id="badge-approvals" class="absolute top-0 right-3 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] hidden">!</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Bottom App Navigation -->
-    <div class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around p-3 text-xs z-10 left-1/2 -translate-x-1/2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <div onclick="switchTab('home')" id="tab-home" class="nav-tab text-center text-indigo-600 cursor-pointer w-1/3">
-            <i class="fa-solid fa-home text-lg block mb-1"></i>Home
-        </div>
-        <div onclick="switchTab('guests')" id="tab-guests" class="nav-tab text-center text-gray-400 cursor-pointer w-1/3">
-            <i class="fa-solid fa-plane-arrival text-lg block mb-1"></i>Guests
-        </div>
-        <div onclick="switchTab('ops')" id="tab-ops" class="nav-tab text-center text-gray-400 cursor-pointer w-1/3">
-            <i class="fa-solid fa-briefcase text-lg block mb-1"></i>Ops
-        </div>
-    </div>
-
-    <!-- JavaScript to Fetch Data -->
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
     <script>
-        // YAHAN APNA LIVE GAS URL DAALEIN
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
 
         window.onload = () => {
-            fetchDashboard(); fetchItinerary(); fetchGuests(); fetchVendors(); fetchVault();
+            loadAllData();
         };
 
         function switchTab(tabName) {
-            document.querySelectorAll('.app-screen').forEach(screen => screen.classList.add('hidden'));
+            // Hide all screens
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.add('hidden'));
+            // Show targeted screen
             document.getElementById('screen-' + tabName).classList.remove('hidden');
-
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.classList.remove('text-indigo-600');
-                tab.classList.add('text-gray-400');
+            
+            // Reset nav colors
+            document.querySelectorAll('.nav-tab').forEach(t => { 
+                t.classList.remove('text-indigo-600'); 
+                t.classList.add('text-gray-400'); 
             });
-            let activeTab = document.getElementById('tab-' + tabName);
-            activeTab.classList.remove('text-gray-400');
-            activeTab.classList.add('text-indigo-600');
+            // Highlight active tab
+            let act = document.getElementById('tab-' + tabName);
+            act.classList.remove('text-gray-400'); 
+            act.classList.add('text-indigo-600');
         }
 
-        // --- Fetchers ---
+        function loadAllData() {
+            fetchDashboard();
+            fetchItinerary();
+            fetchGuests();
+            fetchVendors();
+            fetchVault();
+            fetchExpenses();
+        }
+
         async function fetchDashboard() {
             try {
                 let res = await fetch(`${API_URL}?action=getDashboard`);
@@ -124,7 +147,7 @@
                     if(item.Metric === 'Total Rooms') document.getElementById('stat-total-rooms').innerText = item.Value;
                     if(item.Metric === 'Checked-In') document.getElementById('stat-checked-in').innerText = item.Value;
                 });
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Error fetching dashboard", e); }
         }
 
         async function fetchItinerary() {
@@ -132,18 +155,18 @@
                 let res = await fetch(`${API_URL}?action=getItinerary`);
                 let data = await res.json();
                 let html = '';
-                data.forEach(item => {
+                data.forEach(item => { 
                     html += `
-                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-2 border-indigo-400 flex items-center">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-indigo-500 flex items-center mb-2">
                         <div class="text-indigo-600 font-bold w-20 text-sm">${item.Time}</div>
                         <div class="ml-2">
                             <div class="font-bold text-gray-800">${item.Event}</div>
-                            <div class="text-xs text-gray-500">${item.Venue}</div>
+                            <div class="text-xs text-gray-500"><i class="fa-solid fa-location-dot mr-1"></i>${item.Venue}</div>
                         </div>
-                    </div>`;
+                    </div>`; 
                 });
                 document.getElementById('itinerary-container').innerHTML = html;
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Error fetching itinerary", e); }
         }
 
         async function fetchGuests() {
@@ -152,26 +175,22 @@
                 let data = await res.json();
                 let html = '';
                 data.forEach(item => {
-                    let statusColor = item.Status.includes('Arriving') ? 'text-orange-500' : 'text-green-500';
-                    // Using fallback "N/A" if column is empty
-                    let room = item.Room_No || 'TBD';
-                    let driver = item.Driver_Details || 'Not Assigned';
-                    
+                    let statusColor = item.Status.includes('Checked In') ? 'text-green-500' : 'text-orange-500';
                     html += `
                     <tr>
-                        <td class="p-3 border-b">
+                        <td class="p-3 border-b border-gray-100">
                             <div class="font-bold text-gray-800">${item.Name}</div>
-                            <div class="text-xs text-gray-500">${item.Category} <br>📞 ${item.Phone}</div>
+                            <div class="text-xs text-gray-500">${item.Category} | 📞 ${item.Phone}</div>
                         </td>
-                        <td class="p-3 border-b">
+                        <td class="p-3 border-b border-gray-100">
                             <div class="text-xs font-bold ${statusColor} mb-1">${item.Status}</div>
-                            <div class="text-xs text-gray-600"><i class="fa-solid fa-door-closed mr-1"></i>Rm: ${room}</div>
-                            <div class="text-xs text-gray-600"><i class="fa-solid fa-car mr-1"></i>${driver}</div>
+                            <div class="text-xs text-gray-600"><i class="fa-solid fa-door-closed mr-1"></i>Rm: ${item.Room_No || 'TBD'}</div>
+                            <div class="text-xs text-gray-600 mt-1"><i class="fa-solid fa-car mr-1"></i>${item.Driver_Details || 'Not Assigned'}</div>
                         </td>
                     </tr>`;
                 });
                 document.getElementById('guest-container').innerHTML = html;
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Error fetching guests", e); }
         }
 
         async function fetchVendors() {
@@ -180,19 +199,19 @@
                 let data = await res.json();
                 let html = '';
                 data.forEach(item => {
-                    let statusColor = item.Status.includes('On-Site') ? 'text-green-500' : 'text-orange-500';
+                    let statusColor = item.Status.includes('On-Site') ? 'text-green-600 bg-green-100' : 'text-orange-600 bg-orange-100';
                     html += `
-                    <div class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                    <div class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center border border-gray-100">
                         <div>
-                            <div class="text-xs text-indigo-600 font-bold uppercase">${item.Service}</div>
+                            <div class="text-xs text-indigo-600 font-bold uppercase tracking-wide">${item.Service}</div>
                             <div class="font-bold text-gray-800">${item.Name}</div>
-                            <div class="text-xs text-gray-500">📞 ${item.Phone}</div>
+                            <div class="text-xs text-gray-500 mt-1">📞 ${item.Phone}</div>
                         </div>
-                        <div class="text-xs font-bold px-2 py-1 bg-gray-100 rounded-full ${statusColor}">${item.Status}</div>
+                        <div class="text-xs font-bold px-3 py-1 rounded-full ${statusColor}">${item.Status}</div>
                     </div>`;
                 });
                 document.getElementById('vendors-container').innerHTML = html;
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Error fetching vendors", e); }
         }
 
         async function fetchVault() {
@@ -200,29 +219,110 @@
                 let res = await fetch(`${API_URL}?action=getVault`);
                 let data = await res.json();
                 let html = '';
-                data.forEach(item => {
+                data.forEach(item => { 
                     html += `
-                    <a href="${item.Link}" target="_blank" class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
-                        <i class="fa-solid fa-file-pdf text-2xl text-red-500 mb-2"></i>
-                        <div class="text-xs font-bold text-gray-700">${item.Document}</div>
-                    </a>`;
+                    <a href="${item.Link}" target="_blank" class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition">
+                        <i class="fa-solid fa-file-pdf text-3xl text-red-500 mb-3 mt-1"></i>
+                        <div class="text-xs font-bold text-gray-700 text-center">${item.Document}</div>
+                    </a>`; 
                 });
                 document.getElementById('vault-container').innerHTML = html;
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Error fetching vault", e); }
+        }
+
+        async function fetchExpenses() {
+            try {
+                let res = await fetch(`${API_URL}?action=getExpenses`);
+                let data = await res.json();
+                let html = '';
+                let pendingCount = 0;
+                
+                data.forEach(item => {
+                    if(item.Status === 'Pending') {
+                        pendingCount++;
+                        html += `
+                        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-yellow-400 mb-3" id="exp-${item.Expense_ID}">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <div class="font-bold text-gray-800 text-sm">${item.Item_Description}</div>
+                                    <div class="text-xs text-gray-500 mt-1">Ref ID: ${item.Expense_ID}</div>
+                                </div>
+                                <div class="font-black text-indigo-600 text-lg">${item.Amount}</div>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button onclick="updateExpense('${item.Expense_ID}', 'Approved')" class="w-1/2 bg-green-500 text-white font-bold py-2.5 rounded text-xs hover:bg-green-600 shadow-sm transition">Approve</button>
+                                <button onclick="updateExpense('${item.Expense_ID}', 'Rejected')" class="w-1/2 bg-red-50 text-red-600 font-bold py-2.5 rounded text-xs hover:bg-red-100 border border-red-200 transition">Reject</button>
+                            </div>
+                        </div>`;
+                    } else {
+                        let statusColor = item.Status === 'Approved' ? 'text-green-600 bg-green-50 border-green-200' : 'text-red-600 bg-red-50 border-red-200';
+                        html += `
+                        <div class="bg-gray-50 p-3 rounded-xl shadow-sm border mb-3 flex justify-between items-center opacity-75">
+                            <div>
+                                <div class="font-bold text-gray-700 text-sm">${item.Item_Description}</div>
+                                <div class="font-bold text-gray-900 mt-1">${item.Amount}</div>
+                            </div>
+                            <div class="text-xs font-bold px-3 py-1 rounded-full border ${statusColor}">${item.Status}</div>
+                        </div>`;
+                    }
+                });
+                
+                document.getElementById('expenses-container').innerHTML = html || '<p class="text-sm text-green-600 font-bold bg-green-50 p-3 rounded border border-green-200">No pending approvals found.</p>';
+                
+                if(pendingCount > 0) {
+                    document.getElementById('badge-approvals').classList.remove('hidden');
+                } else {
+                    document.getElementById('badge-approvals').classList.add('hidden');
+                }
+            } catch(e) { console.error("Error fetching expenses", e); }
+        }
+
+        async function updateExpense(id, newStatus) {
+            try {
+                document.getElementById(`exp-${id}`).style.opacity = '0.5';
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'updateExpenseStatus', expenseId: id, newStatus: newStatus }) 
+                });
+                // Refresh list automatically after action
+                fetchExpenses(); 
+            } catch (e) {
+                alert("Error updating status. Please check connection.");
+                document.getElementById(`exp-${id}`).style.opacity = '1';
+            }
         }
 
         async function sendSOS() {
-            const msgInput = document.getElementById('sos-message');
-            const statusText = document.getElementById('sos-status');
-            if(!msgInput.value) return alert("Please enter a message!");
+            let msgInput = document.getElementById('sos-message');
+            let btn = document.getElementById('sos-btn');
             
-            const payload = { action: 'submitSOS', clientName: 'Yash Family', message: msgInput.value };
+            if(!msgInput.value) {
+                alert("Please type a request before sending.");
+                return;
+            }
+            
+            btn.innerText = "Sending Request...";
+            btn.classList.replace('bg-red-600', 'bg-gray-400');
+            
             try {
-                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'submitSOS', clientName: 'Yash Family', message: msgInput.value }) 
+                });
+                
                 msgInput.value = '';
-                statusText.classList.remove('hidden');
-                setTimeout(() => { statusText.classList.add('hidden'); }, 3000);
-            } catch(e) { alert("Error sending request."); }
+                btn.innerText = "Request Sent Successfully!";
+                btn.classList.replace('bg-gray-400', 'bg-green-500');
+                
+                setTimeout(() => { 
+                    btn.innerText = "Send Request to Manager"; 
+                    btn.classList.replace('bg-green-500', 'bg-red-600');
+                }, 3000);
+            } catch(e) {
+                alert("Error sending SOS. Please check your internet connection.");
+                btn.innerText = "Send Request to Manager"; 
+                btn.classList.replace('bg-gray-400', 'bg-red-600');
+            }
         }
     </script>
 </body>
