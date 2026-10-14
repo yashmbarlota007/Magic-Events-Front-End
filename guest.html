@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guest Portal - Wedding Celebration</title>
+    
+    <!-- Tailwind CSS for Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Premium Wedding Typography -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .font-sans { font-family: 'Lato', sans-serif; }
+        .font-serif { 
+            font-family: 'Playfair Display', serif; 
+        }
+        .font-sans { 
+            font-family: 'Lato', sans-serif; 
+        }
         
         /* Soft Elegant Backgrounds */
         .wedding-bg { 
@@ -63,8 +71,13 @@
             <i class="fa-solid fa-dove text-5xl text-rose-800"></i>
         </div>
         
-        <h1 class="text-4xl font-serif font-bold mb-3 text-rose-900 text-center tracking-tight">Welcome</h1>
-        <p class="text-sm text-gray-500 mb-10 text-center max-w-xs leading-relaxed font-medium">Please enter your registered mobile number to access your stay details and celebration itinerary.</p>
+        <h1 class="text-4xl font-serif font-bold mb-3 text-rose-900 text-center tracking-tight">
+            Welcome
+        </h1>
+        
+        <p class="text-sm text-gray-500 mb-10 text-center max-w-xs leading-relaxed font-medium">
+            Please enter your registered mobile number to access your stay details and celebration itinerary.
+        </p>
         
         <div class="w-full max-w-xs relative mb-5">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -76,7 +89,10 @@
         <button onclick="guestLogin()" id="login-btn" class="w-full max-w-xs bg-rose-800 text-rose-50 font-bold tracking-widest uppercase text-sm py-4 rounded-xl shadow-lg hover:bg-rose-900 transition">
             Enter Wedding Portal
         </button>
-        <p id="login-error" class="text-red-500 text-sm mt-5 hidden font-bold">Number not found. Please check with the host.</p>
+        
+        <p id="login-error" class="text-red-500 text-sm mt-5 hidden font-bold">
+            Number not found. Please check with the host.
+        </p>
     </div>
 
     <!-- ========================================================================= -->
@@ -110,7 +126,9 @@
                     <i class="fa-solid fa-hotel text-7xl"></i>
                 </div>
                 
-                <h3 class="text-sm font-bold text-rose-800 uppercase tracking-widest mb-4 border-b border-rose-50 pb-3">Venue & Stay Details</h3>
+                <h3 class="text-sm font-bold text-rose-800 uppercase tracking-widest mb-4 border-b border-rose-50 pb-3">
+                    Venue & Stay Details
+                </h3>
                 
                 <!-- Main Event Venue Auto-Fetched from Master Data -->
                 <div class="mb-5 flex justify-between items-center bg-rose-50 p-4 rounded-2xl border border-rose-100">
@@ -144,17 +162,22 @@
                         <i class="fa-solid fa-user-group mr-1.5"></i>Sharing Room With
                     </p>
                     <p class="text-sm font-bold text-gray-800 mb-1.5" id="guest-sharing"></p>
-                    <p class="text-[10px] text-gray-500 italic leading-snug">To ensure a vibrant celebration, standard rooms are arranged for shared occupancy.</p>
+                    <p class="text-[10px] text-gray-500 italic leading-snug">
+                        To ensure a vibrant celebration, standard rooms are arranged for shared occupancy.
+                    </p>
                 </div>
             </div>
 
             <!-- ================= VERTICAL TIMELINE ITINERARY ================= -->
-            <h2 class="text-2xl font-serif font-bold mb-6 text-gray-800 text-center tracking-tight">Celebration Itinerary</h2>
+            <h2 class="text-2xl font-serif font-bold mb-6 text-gray-800 text-center tracking-tight">
+                Celebration Itinerary
+            </h2>
             
             <div class="timeline-container" id="itinerary-container">
                 <p class="text-sm text-center text-gray-400 italic">Unrolling the parchment...</p>
             </div>
 
+            <!-- Footer -->
             <div class="mt-12 mb-4 text-center">
                 <i class="fa-solid fa-heart text-rose-300 mb-2 text-xl"></i>
                 <p class="text-[10px] text-gray-400 tracking-widest uppercase font-bold">Powered by Magic Events OS</p>
@@ -205,8 +228,12 @@
             try {
                 let res = await fetch(API_URL, { 
                     method: 'POST', 
-                    body: JSON.stringify({ action: 'guestLogin', phone: phone }) 
+                    body: JSON.stringify({ 
+                        action: 'guestLogin', 
+                        phone: phone 
+                    }) 
                 });
+                
                 let data = await res.json();
                 
                 if (data.status === 'Success') {
@@ -219,7 +246,7 @@
                     document.getElementById('guest-room').innerText = data.guestData.Room_No;
                     document.getElementById('guest-driver').innerText = data.guestData.Driver_Details;
                     
-                    // Display and Style Status
+                    // Display and Style Check-in Status
                     let st = data.guestData.Status;
                     let stEl = document.getElementById('guest-status');
                     stEl.innerText = st;
@@ -286,7 +313,9 @@
                         document.getElementById('nav-hashtag').innerText = item.Value;
                     }
                 });
-            } catch(e) { console.error("Error fetching master data", e); }
+            } catch(e) { 
+                console.error("Error fetching master data", e); 
+            }
         }
 
         // ---------------------------------------------------------------------
@@ -299,30 +328,57 @@
                 let html = '';
                 
                 data.forEach(item => { 
-                    // Optional Data Handling
-                    let dressHtml = item.Dress_Code ? `<div class="mt-3 text-[10px] font-bold text-rose-700 bg-rose-50 inline-block px-3 py-1.5 rounded-md border border-rose-100"><i class="fa-solid fa-shirt mr-1.5"></i>${item.Dress_Code}</div>` : '';
-                    let mapHtml = item.Maps_Link ? `<a href="${item.Maps_Link}" target="_blank" class="mt-3 text-[10px] font-bold text-blue-600 bg-blue-50 inline-block px-3 py-1.5 rounded-md ml-2 border border-blue-100 hover:bg-blue-100 transition"><i class="fa-solid fa-map-location-dot mr-1.5"></i>Map</a>` : '';
-                    let noteHtml = item.Notes ? `<p class="text-[11px] text-gray-500 italic mt-3 bg-gray-50 p-3 rounded-lg border border-gray-100 leading-snug"><i class="fa-solid fa-info-circle mr-1.5 text-rose-300"></i>${item.Notes}</p>` : '';
+                    // Optional Data Handling (Only show if data exists in the sheet)
+                    let dressHtml = item.Dress_Code ? `
+                        <div class="mt-3 text-[10px] font-bold text-rose-700 bg-rose-50 inline-block px-3 py-1.5 rounded-md border border-rose-100">
+                            <i class="fa-solid fa-shirt mr-1.5"></i>${item.Dress_Code}
+                        </div>` : '';
+                        
+                    let mapHtml = item.Maps_Link ? `
+                        <a href="${item.Maps_Link}" target="_blank" class="mt-3 text-[10px] font-bold text-blue-600 bg-blue-50 inline-block px-3 py-1.5 rounded-md ml-2 border border-blue-100 hover:bg-blue-100 transition">
+                            <i class="fa-solid fa-map-location-dot mr-1.5"></i>Map
+                        </a>` : '';
+                        
+                    let noteHtml = item.Notes ? `
+                        <p class="text-[11px] text-gray-500 italic mt-3 bg-gray-50 p-3 rounded-lg border border-gray-100 leading-snug">
+                            <i class="fa-solid fa-info-circle mr-1.5 text-rose-300"></i>${item.Notes}
+                        </p>` : '';
                     
                     // Smart Icon Selection based on Event Name
                     let icon = "fa-calendar-star";
-                    let ev = item.Event.toLowerCase();
-                    if(ev.includes('haldi')) icon = "fa-sun";
-                    else if(ev.includes('sangeet') || ev.includes('dj') || ev.includes('cocktail')) icon = "fa-music";
-                    else if(ev.includes('wedding') || ev.includes('phera') || ev.includes('varmala')) icon = "fa-fire";
-                    else if(ev.includes('mehendi')) icon = "fa-leaf";
-                    else if(ev.includes('dinner') || ev.includes('lunch') || ev.includes('breakfast')) icon = "fa-utensils";
+                    let ev = item.Event ? item.Event.toLowerCase() : "";
+                    
+                    if(ev.includes('haldi')) {
+                        icon = "fa-sun";
+                    } else if(ev.includes('sangeet') || ev.includes('dj') || ev.includes('cocktail') || ev.includes('carnival')) {
+                        icon = "fa-music";
+                    } else if(ev.includes('wedding') || ev.includes('phera') || ev.includes('varmala') || ev.includes('baraat')) {
+                        icon = "fa-fire";
+                    } else if(ev.includes('mehendi')) {
+                        icon = "fa-leaf";
+                    } else if(ev.includes('dinner') || ev.includes('lunch') || ev.includes('breakfast')) {
+                        icon = "fa-utensils";
+                    }
 
-                    // Vertical Timeline Block
+                    // Vertical Timeline Block Construction
                     html += `
                     <div class="mb-8 relative pl-8">
-                        <div class="timeline-dot"><i class="fa-solid ${icon} text-[9px] text-rose-600"></i></div>
+                        <!-- The Circle Dot on the Timeline -->
+                        <div class="timeline-dot">
+                            <i class="fa-solid ${icon} text-[9px] text-rose-600"></i>
+                        </div>
                         
+                        <!-- The Event Card -->
                         <div class="card-bg p-5 rounded-2xl shadow-sm border border-rose-100 hover:shadow-md transition">
+                            
                             <div class="text-xs text-rose-600 font-bold mb-1.5 tracking-wide uppercase">
                                 ${item.Date ? item.Date + ' • ' : ''}${item.Time}
                             </div>
-                            <h3 class="font-serif font-bold text-gray-800 text-xl leading-tight mb-1.5">${item.Event}</h3>
+                            
+                            <h3 class="font-serif font-bold text-gray-800 text-xl leading-tight mb-1.5">
+                                ${item.Event}
+                            </h3>
+                            
                             <div class="text-xs text-gray-600 font-medium">
                                 <i class="fa-solid fa-location-dot mr-1.5 text-rose-400"></i>${item.Venue}
                             </div>
@@ -331,16 +387,21 @@
                                 ${dressHtml}
                                 ${mapHtml}
                             </div>
+                            
                             ${noteHtml}
                         </div>
                     </div>`; 
                 });
                 
                 document.getElementById('itinerary-container').innerHTML = html || '<p class="text-sm text-gray-500 italic text-center">No events scheduled.</p>';
-            } catch(e) { console.error("Error fetching itinerary", e); }
+            } catch(e) { 
+                console.error("Error fetching itinerary", e); 
+            }
         }
 
-        // Logout
+        // ---------------------------------------------------------------------
+        // LOGOUT
+        // ---------------------------------------------------------------------
         function logout() { 
             localStorage.removeItem('magic_guest_phone'); 
             location.reload(); 
