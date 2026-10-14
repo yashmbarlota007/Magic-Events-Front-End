@@ -10,7 +10,7 @@
 <body class="bg-gray-50 font-sans antialiased text-gray-800">
 
     <div id="app-content">
-        <!-- Top Navigation -->
+        <!-- ================= TOP NAVIGATION ================= -->
         <nav class="bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2">
             <div class="text-xl font-bold"><i class="fa-solid fa-ring mr-2"></i>Magic Events</div>
             <div class="text-sm font-medium">Yash Family</div>
@@ -20,7 +20,7 @@
             
             <!-- ================= HOME SCREEN ================= -->
             <div id="screen-home" class="app-screen">
-                <!-- Dashboard Metrics -->
+                
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="bg-white p-4 rounded-xl shadow border-l-4 border-indigo-500">
                         <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Total Rooms</p>
@@ -36,10 +36,17 @@
                 <div class="bg-red-50 p-4 rounded-xl shadow mb-6 border border-red-200">
                     <h2 class="text-sm font-bold text-red-700 mb-2"><i class="fa-solid fa-bell mr-2"></i>Quick Request (SOS)</h2>
                     <input type="text" id="sos-message" placeholder="E.g., Need 2 water bottles in Room 101" class="w-full p-3 rounded border border-gray-300 mb-2 text-sm focus:outline-none focus:border-red-400">
-                    <button onclick="sendSOS()" id="sos-btn" class="w-full bg-red-600 text-white font-bold py-3 rounded shadow hover:bg-red-700 transition">Send Request to Manager</button>
+                    <button onclick="sendSOS()" id="sos-btn" class="w-full bg-red-600 text-white font-bold py-3 rounded shadow hover:bg-red-700 transition mb-4">
+                        Send Request to Manager
+                    </button>
+                    
+                    <!-- SOS History Tracker -->
+                    <h3 class="text-xs font-bold text-gray-700 mb-2 border-t pt-2 border-red-200">My Recent Requests:</h3>
+                    <div id="client-sos-history" class="space-y-2 max-h-32 overflow-y-auto">
+                        <p class="text-xs text-gray-500">Loading history...</p>
+                    </div>
                 </div>
 
-                <!-- Dynamic Itinerary -->
                 <h2 class="text-lg font-bold mb-3 text-gray-700">Today's Itinerary</h2>
                 <div class="space-y-3" id="itinerary-container">
                     <p class="text-sm text-gray-500">Loading schedule...</p>
@@ -111,32 +118,30 @@
 
         window.onload = () => {
             loadAllData();
+            // Background Auto-Sync every 2 Minutes (120,000 ms)
+            setInterval(loadAllData, 120000);
         };
 
         function switchTab(tabName) {
-            // Hide all screens
             document.querySelectorAll('.app-screen').forEach(s => s.classList.add('hidden'));
-            // Show targeted screen
             document.getElementById('screen-' + tabName).classList.remove('hidden');
-            
-            // Reset nav colors
             document.querySelectorAll('.nav-tab').forEach(t => { 
                 t.classList.remove('text-indigo-600'); 
                 t.classList.add('text-gray-400'); 
             });
-            // Highlight active tab
             let act = document.getElementById('tab-' + tabName);
             act.classList.remove('text-gray-400'); 
             act.classList.add('text-indigo-600');
         }
 
         function loadAllData() {
-            fetchDashboard();
-            fetchItinerary();
-            fetchGuests();
-            fetchVendors();
-            fetchVault();
-            fetchExpenses();
+            fetchDashboard(); 
+            fetchItinerary(); 
+            fetchGuests(); 
+            fetchVendors(); 
+            fetchVault(); 
+            fetchExpenses(); 
+            fetchClientSOS();
         }
 
         async function fetchDashboard() {
@@ -161,7 +166,9 @@
                         <div class="text-indigo-600 font-bold w-20 text-sm">${item.Time}</div>
                         <div class="ml-2">
                             <div class="font-bold text-gray-800">${item.Event}</div>
-                            <div class="text-xs text-gray-500"><i class="fa-solid fa-location-dot mr-1"></i>${item.Venue}</div>
+                            <div class="text-xs text-gray-500">
+                                <i class="fa-solid fa-location-dot mr-1"></i>${item.Venue}
+                            </div>
                         </div>
                     </div>`; 
                 });
@@ -184,8 +191,12 @@
                         </td>
                         <td class="p-3 border-b border-gray-100">
                             <div class="text-xs font-bold ${statusColor} mb-1">${item.Status}</div>
-                            <div class="text-xs text-gray-600"><i class="fa-solid fa-door-closed mr-1"></i>Rm: ${item.Room_No || 'TBD'}</div>
-                            <div class="text-xs text-gray-600 mt-1"><i class="fa-solid fa-car mr-1"></i>${item.Driver_Details || 'Not Assigned'}</div>
+                            <div class="text-xs text-gray-600">
+                                <i class="fa-solid fa-door-closed mr-1"></i>Rm: ${item.Room_No || 'TBD'}
+                            </div>
+                            <div class="text-xs text-gray-600 mt-1">
+                                <i class="fa-solid fa-car mr-1"></i>${item.Driver_Details || 'Not Assigned'}
+                            </div>
                         </td>
                     </tr>`;
                 });
@@ -277,6 +288,27 @@
             } catch(e) { console.error("Error fetching expenses", e); }
         }
 
+        async function fetchClientSOS() {
+            try {
+                let res = await fetch(`${API_URL}?action=getSOS`);
+                let data = await res.json();
+                let html = '';
+                
+                data.reverse().forEach(item => {
+                    let st = item.Status || 'Pending';
+                    let stColor = st === 'Resolved' ? 'text-green-600' : 'text-orange-500';
+                    let stIcon = st === 'Resolved' ? 'fa-check-circle' : 'fa-clock';
+                    
+                    html += `
+                    <div class="bg-white p-2 rounded shadow-sm border text-xs flex justify-between items-center">
+                        <span class="font-bold text-gray-700 truncate w-2/3">${item.Message}</span>
+                        <span class="${stColor} font-bold"><i class="fa-solid ${stIcon} mr-1"></i>${st}</span>
+                    </div>`;
+                });
+                document.getElementById('client-sos-history').innerHTML = html || '<p class="text-xs text-gray-500">No requests yet.</p>';
+            } catch(e) { console.error("Error fetching SOS history", e); }
+        }
+
         async function updateExpense(id, newStatus) {
             try {
                 document.getElementById(`exp-${id}`).style.opacity = '0.5';
@@ -284,24 +316,17 @@
                     method: 'POST', 
                     body: JSON.stringify({ action: 'updateExpenseStatus', expenseId: id, newStatus: newStatus }) 
                 });
-                // Refresh list automatically after action
                 fetchExpenses(); 
-            } catch (e) {
-                alert("Error updating status. Please check connection.");
-                document.getElementById(`exp-${id}`).style.opacity = '1';
-            }
+            } catch (e) { alert("Error updating status."); }
         }
 
         async function sendSOS() {
             let msgInput = document.getElementById('sos-message');
             let btn = document.getElementById('sos-btn');
             
-            if(!msgInput.value) {
-                alert("Please type a request before sending.");
-                return;
-            }
+            if(!msgInput.value) return alert("Please type a request.");
             
-            btn.innerText = "Sending Request...";
+            btn.innerText = "Sending...";
             btn.classList.replace('bg-red-600', 'bg-gray-400');
             
             try {
@@ -311,15 +336,17 @@
                 });
                 
                 msgInput.value = '';
-                btn.innerText = "Request Sent Successfully!";
+                btn.innerText = "Sent Successfully!";
                 btn.classList.replace('bg-gray-400', 'bg-green-500');
+                
+                fetchClientSOS(); // Refresh SOS history immediately
                 
                 setTimeout(() => { 
                     btn.innerText = "Send Request to Manager"; 
-                    btn.classList.replace('bg-green-500', 'bg-red-600');
+                    btn.classList.replace('bg-green-500', 'bg-red-600'); 
                 }, 3000);
             } catch(e) {
-                alert("Error sending SOS. Please check your internet connection.");
+                alert("Error sending SOS.");
                 btn.innerText = "Send Request to Manager"; 
                 btn.classList.replace('bg-gray-400', 'bg-red-600');
             }
