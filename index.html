@@ -15,12 +15,11 @@
         <div class="text-sm">Welcome, Yash Family</div>
     </nav>
 
-    <!-- Main Container (Added margin-top for fixed nav) -->
+    <!-- Main Container -->
     <div class="max-w-md mx-auto p-4 pt-20 pb-20">
 
         <!-- ================= HOME SCREEN ================= -->
         <div id="screen-home" class="app-screen">
-            <!-- Live Dashboard Metrics -->
             <h2 class="text-lg font-bold mb-3 text-gray-700">Live Logistics</h2>
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="bg-white p-4 rounded-xl shadow border-l-4 border-indigo-500">
@@ -48,15 +47,15 @@
             </div>
         </div>
 
-        <!-- ================= GUESTS SCREEN ================= -->
+        <!-- ================= GUESTS SCREEN (Advanced Logistics) ================= -->
         <div id="screen-guests" class="app-screen hidden">
-            <h2 class="text-lg font-bold mb-3 text-gray-700">Guest Arrivals</h2>
+            <h2 class="text-lg font-bold mb-3 text-gray-700">Hospitality Engine</h2>
             <div class="bg-white rounded-xl shadow overflow-hidden">
                 <table class="min-w-full text-left text-sm">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="p-3">Name</th>
-                            <th class="p-3">Status</th>
+                            <th class="p-3">Guest Info</th>
+                            <th class="p-3">Logistics</th>
                         </tr>
                     </thead>
                     <tbody id="guest-container" class="divide-y divide-gray-200">
@@ -66,63 +65,57 @@
             </div>
         </div>
 
-        <!-- ================= LEDGER SCREEN ================= -->
-        <div id="screen-ledger" class="app-screen hidden">
-            <h2 class="text-lg font-bold mb-3 text-gray-700">Payment Ledger</h2>
-            <div class="bg-white p-4 rounded-xl shadow text-center text-gray-500">
-                <i class="fa-solid fa-lock text-3xl mb-2 text-indigo-300"></i>
-                <p>Ledger data will be synced here.</p>
+        <!-- ================= OPS SCREEN (Vendors & Vault) ================= -->
+        <div id="screen-ops" class="app-screen hidden">
+            <h2 class="text-lg font-bold mb-3 text-gray-700">Digital Vault</h2>
+            <div class="grid grid-cols-2 gap-3 mb-6" id="vault-container">
+                <p class="text-sm text-gray-500">Loading documents...</p>
+            </div>
+
+            <h2 class="text-lg font-bold mb-3 text-gray-700">Vendor POCs</h2>
+            <div class="space-y-3" id="vendors-container">
+                <p class="text-sm text-gray-500">Loading vendors...</p>
             </div>
         </div>
 
     </div>
 
-    <!-- Bottom App Navigation (Now Clickable) -->
+    <!-- Bottom App Navigation -->
     <div class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around p-3 text-xs z-10 left-1/2 -translate-x-1/2 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <div onclick="switchTab('home')" id="tab-home" class="nav-tab text-center text-indigo-600 cursor-pointer w-1/4">
+        <div onclick="switchTab('home')" id="tab-home" class="nav-tab text-center text-indigo-600 cursor-pointer w-1/3">
             <i class="fa-solid fa-home text-lg block mb-1"></i>Home
         </div>
-        <div onclick="switchTab('guests')" id="tab-guests" class="nav-tab text-center text-gray-400 cursor-pointer w-1/4">
-            <i class="fa-solid fa-users text-lg block mb-1"></i>Guests
+        <div onclick="switchTab('guests')" id="tab-guests" class="nav-tab text-center text-gray-400 cursor-pointer w-1/3">
+            <i class="fa-solid fa-plane-arrival text-lg block mb-1"></i>Guests
         </div>
-        <div onclick="switchTab('ledger')" id="tab-ledger" class="nav-tab text-center text-gray-400 cursor-pointer w-1/4">
-            <i class="fa-solid fa-file-invoice text-lg block mb-1"></i>Ledger
+        <div onclick="switchTab('ops')" id="tab-ops" class="nav-tab text-center text-gray-400 cursor-pointer w-1/3">
+            <i class="fa-solid fa-briefcase text-lg block mb-1"></i>Ops
         </div>
     </div>
 
-    <!-- JavaScript to Fetch Data & Handle Clicks -->
+    <!-- JavaScript to Fetch Data -->
     <script>
         // YAHAN APNA LIVE GAS URL DAALEIN
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
 
-        // Load Data on Startup
         window.onload = () => {
-            fetchDashboard();
-            fetchItinerary();
-            fetchGuests();
+            fetchDashboard(); fetchItinerary(); fetchGuests(); fetchVendors(); fetchVault();
         };
 
-        // --- Tab Switching Logic ---
         function switchTab(tabName) {
-            // Hide all screens
-            document.querySelectorAll('.app-screen').forEach(screen => {
-                screen.classList.add('hidden');
-            });
-            // Show targeted screen
+            document.querySelectorAll('.app-screen').forEach(screen => screen.classList.add('hidden'));
             document.getElementById('screen-' + tabName).classList.remove('hidden');
 
-            // Reset all tab colors to gray
             document.querySelectorAll('.nav-tab').forEach(tab => {
                 tab.classList.remove('text-indigo-600');
                 tab.classList.add('text-gray-400');
             });
-            // Highlight active tab
             let activeTab = document.getElementById('tab-' + tabName);
             activeTab.classList.remove('text-gray-400');
             activeTab.classList.add('text-indigo-600');
         }
 
-        // --- Data Fetching Logic ---
+        // --- Fetchers ---
         async function fetchDashboard() {
             try {
                 let res = await fetch(`${API_URL}?action=getDashboard`);
@@ -131,7 +124,7 @@
                     if(item.Metric === 'Total Rooms') document.getElementById('stat-total-rooms').innerText = item.Value;
                     if(item.Metric === 'Checked-In') document.getElementById('stat-checked-in').innerText = item.Value;
                 });
-            } catch(e) { console.error("Error fetching dashboard", e); }
+            } catch(e) { console.error(e); }
         }
 
         async function fetchItinerary() {
@@ -145,12 +138,12 @@
                         <div class="text-indigo-600 font-bold w-20 text-sm">${item.Time}</div>
                         <div class="ml-2">
                             <div class="font-bold text-gray-800">${item.Event}</div>
-                            <div class="text-xs text-gray-500"><i class="fa-solid fa-location-dot mr-1"></i>${item.Venue}</div>
+                            <div class="text-xs text-gray-500">${item.Venue}</div>
                         </div>
                     </div>`;
                 });
                 document.getElementById('itinerary-container').innerHTML = html;
-            } catch(e) { console.error("Error fetching itinerary", e); }
+            } catch(e) { console.error(e); }
         }
 
         async function fetchGuests() {
@@ -160,40 +153,76 @@
                 let html = '';
                 data.forEach(item => {
                     let statusColor = item.Status.includes('Arriving') ? 'text-orange-500' : 'text-green-500';
+                    // Using fallback "N/A" if column is empty
+                    let room = item.Room_No || 'TBD';
+                    let driver = item.Driver_Details || 'Not Assigned';
+                    
                     html += `
                     <tr>
-                        <td class="p-3 font-medium text-gray-700">${item.Name}<br><span class="text-xs text-gray-400">${item.Category}</span></td>
-                        <td class="p-3 font-bold ${statusColor}">${item.Status}</td>
+                        <td class="p-3 border-b">
+                            <div class="font-bold text-gray-800">${item.Name}</div>
+                            <div class="text-xs text-gray-500">${item.Category} <br>📞 ${item.Phone}</div>
+                        </td>
+                        <td class="p-3 border-b">
+                            <div class="text-xs font-bold ${statusColor} mb-1">${item.Status}</div>
+                            <div class="text-xs text-gray-600"><i class="fa-solid fa-door-closed mr-1"></i>Rm: ${room}</div>
+                            <div class="text-xs text-gray-600"><i class="fa-solid fa-car mr-1"></i>${driver}</div>
+                        </td>
                     </tr>`;
                 });
                 document.getElementById('guest-container').innerHTML = html;
-            } catch(e) { console.error("Error fetching guests", e); }
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchVendors() {
+            try {
+                let res = await fetch(`${API_URL}?action=getVendors`);
+                let data = await res.json();
+                let html = '';
+                data.forEach(item => {
+                    let statusColor = item.Status.includes('On-Site') ? 'text-green-500' : 'text-orange-500';
+                    html += `
+                    <div class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                        <div>
+                            <div class="text-xs text-indigo-600 font-bold uppercase">${item.Service}</div>
+                            <div class="font-bold text-gray-800">${item.Name}</div>
+                            <div class="text-xs text-gray-500">📞 ${item.Phone}</div>
+                        </div>
+                        <div class="text-xs font-bold px-2 py-1 bg-gray-100 rounded-full ${statusColor}">${item.Status}</div>
+                    </div>`;
+                });
+                document.getElementById('vendors-container').innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
+
+        async function fetchVault() {
+            try {
+                let res = await fetch(`${API_URL}?action=getVault`);
+                let data = await res.json();
+                let html = '';
+                data.forEach(item => {
+                    html += `
+                    <a href="${item.Link}" target="_blank" class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center hover:shadow-md transition">
+                        <i class="fa-solid fa-file-pdf text-2xl text-red-500 mb-2"></i>
+                        <div class="text-xs font-bold text-gray-700">${item.Document}</div>
+                    </a>`;
+                });
+                document.getElementById('vault-container').innerHTML = html;
+            } catch(e) { console.error(e); }
         }
 
         async function sendSOS() {
             const msgInput = document.getElementById('sos-message');
             const statusText = document.getElementById('sos-status');
-            
             if(!msgInput.value) return alert("Please enter a message!");
             
-            const payload = {
-                action: 'submitSOS',
-                clientName: 'Yash Family',
-                message: msgInput.value
-            };
-
+            const payload = { action: 'submitSOS', clientName: 'Yash Family', message: msgInput.value };
             try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                 msgInput.value = '';
                 statusText.classList.remove('hidden');
                 setTimeout(() => { statusText.classList.add('hidden'); }, 3000);
-            } catch(e) {
-                alert("Error sending request.");
-            }
+            } catch(e) { alert("Error sending request."); }
         }
     </script>
 </body>
