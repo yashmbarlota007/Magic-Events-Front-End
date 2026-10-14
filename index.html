@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic Events - Client Portal</title>
-    <!-- Tailwind CSS for Styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 font-sans antialiased text-gray-800 pb-20">
@@ -27,11 +27,11 @@
         <div class="max-w-md mx-auto p-4 pt-20">
             
             <!-- ========================================================================= -->
-            <!-- 1. HOME SCREEN (Dashboard, Venue, SOS, Itinerary) -->
+            <!-- 1. HOME SCREEN -->
             <!-- ========================================================================= -->
             <div id="screen-home" class="app-screen">
                 
-                <!-- Main Venue Navigation Card (Fetches from Master Data) -->
+                <!-- Main Venue Navigation Card -->
                 <div id="main-venue-card" class="bg-gradient-to-r from-blue-600 to-indigo-700 p-5 rounded-2xl shadow-lg mb-6 text-white hidden">
                     <div class="flex justify-between items-center">
                         <div>
@@ -46,15 +46,70 @@
                     </div>
                 </div>
 
-                <!-- Live Metrics Dashboard -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-500">
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Total Rooms</p>
-                        <h3 class="text-3xl font-black text-indigo-600" id="stat-total-rooms">--</h3>
+                <!-- ================= BIFURCATED LOGISTICS DASHBOARD (BRIDE VS GROOM) ================= -->
+                <h2 class="text-lg font-black mb-3 text-gray-800 tracking-tight">
+                    <i class="fa-solid fa-chart-pie mr-2 text-indigo-600"></i>Live Logistics
+                </h2>
+
+                <!-- BRIDE SIDE CARD -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-rose-100 mb-4">
+                    <h3 class="font-bold text-gray-800 mb-3 border-b border-gray-50 pb-2 flex items-center">
+                        <i class="fa-solid fa-gem text-rose-500 mr-2"></i>Bride Side
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-rose-50 p-3 rounded-xl border border-rose-100 cursor-pointer hover:bg-rose-100 transition" onclick="openDetailsModal('bride', 'guests')">
+                            <div class="text-[10px] text-rose-600 font-bold uppercase tracking-wider mb-1">Guests</div>
+                            <div class="font-black text-gray-800 text-xl">
+                                <span id="bride-guests-arrived">0</span> 
+                                <span class="text-xs text-gray-400 font-medium">/ <span id="bride-guests-total">0</span></span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-1">
+                                <span id="bride-guests-pending" class="text-rose-500 font-bold">0</span> Pending
+                            </div>
+                        </div>
+                        
+                        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 cursor-pointer hover:bg-indigo-100 transition" onclick="openDetailsModal('bride', 'rooms')">
+                            <div class="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mb-1">Rooms</div>
+                            <div class="font-black text-gray-800 text-xl">
+                                <span id="bride-rooms-checkedin">0</span> 
+                                <span class="text-xs text-gray-400 font-medium">/ <span id="bride-rooms-total">0</span></span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-1">
+                                <span id="bride-rooms-pending" class="text-indigo-500 font-bold">0</span> Pending
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-green-500">
-                        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">Checked-In</p>
-                        <h3 class="text-3xl font-black text-green-600" id="stat-checked-in">--</h3>
+                </div>
+
+                <!-- GROOM SIDE CARD -->
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-blue-100 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-3 border-b border-gray-50 pb-2 flex items-center">
+                        <i class="fa-solid fa-user-tie text-blue-500 mr-2"></i>Groom Side
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-100 transition" onclick="openDetailsModal('groom', 'guests')">
+                            <div class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-1">Guests</div>
+                            <div class="font-black text-gray-800 text-xl">
+                                <span id="groom-guests-arrived">0</span> 
+                                <span class="text-xs text-gray-400 font-medium">/ <span id="groom-guests-total">0</span></span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-1">
+                                <span id="groom-guests-pending" class="text-blue-500 font-bold">0</span> Pending
+                            </div>
+                        </div>
+                        
+                        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 cursor-pointer hover:bg-indigo-100 transition" onclick="openDetailsModal('groom', 'rooms')">
+                            <div class="text-[10px] text-indigo-600 font-bold uppercase tracking-wider mb-1">Rooms</div>
+                            <div class="font-black text-gray-800 text-xl">
+                                <span id="groom-rooms-checkedin">0</span> 
+                                <span class="text-xs text-gray-400 font-medium">/ <span id="groom-rooms-total">0</span></span>
+                            </div>
+                            <div class="text-[10px] text-gray-500 mt-1">
+                                <span id="groom-rooms-pending" class="text-indigo-500 font-bold">0</span> Pending
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -68,7 +123,6 @@
                         Send Request to Manager
                     </button>
                     
-                    <!-- SOS History Tracker -->
                     <h3 class="text-xs font-bold text-gray-600 mb-2 border-t border-red-200 pt-3">
                         <i class="fa-solid fa-clock-rotate-left mr-1"></i>My Recent Requests:
                     </h3>
@@ -77,7 +131,7 @@
                     </div>
                 </div>
 
-                <!-- Dynamic Detailed Itinerary -->
+                <!-- Detailed Itinerary -->
                 <h2 class="text-lg font-black mb-4 text-gray-800 tracking-tight">
                     <i class="fa-regular fa-calendar-days mr-2 text-indigo-600"></i>Event Itinerary
                 </h2>
@@ -128,7 +182,7 @@
             </div>
 
             <!-- ========================================================================= -->
-            <!-- 4. OPERATIONS (VAULT & VENDORS) SCREEN -->
+            <!-- 4. OPERATIONS SCREEN -->
             <!-- ========================================================================= -->
             <div id="screen-ops" class="app-screen hidden">
                 <h2 class="text-2xl font-black mb-1 text-gray-800 tracking-tight">Digital Vault</h2>
@@ -147,7 +201,7 @@
             </div>
 
             <!-- ========================================================================= -->
-            <!-- 5. FINANCIAL APPROVALS SCREEN -->
+            <!-- 5. APPROVALS SCREEN -->
             <!-- ========================================================================= -->
             <div id="screen-approvals" class="app-screen hidden">
                 <h2 class="text-2xl font-black mb-1 text-gray-800 tracking-tight">Pending Approvals</h2>
@@ -160,88 +214,100 @@
         </div>
 
         <!-- ========================================================================= -->
-        <!-- BOTTOM NAVIGATION (5 TABS) -->
+        <!-- BOTTOM NAVIGATION -->
         <!-- ========================================================================= -->
         <div class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-200 flex justify-between p-2 text-[10px] font-bold z-20 left-1/2 -translate-x-1/2 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-safe">
-            
             <div onclick="switchTab('home')" id="tab-home" class="nav-tab flex flex-col items-center justify-center text-indigo-600 w-1/5 py-1 cursor-pointer transition">
-                <i class="fa-solid fa-house text-lg mb-1"></i>
-                <span>Home</span>
+                <i class="fa-solid fa-house text-lg mb-1"></i><span>Home</span>
             </div>
-            
             <div onclick="switchTab('live')" id="tab-live" class="nav-tab flex flex-col items-center justify-center text-gray-400 w-1/5 py-1 cursor-pointer transition relative">
-                <i class="fa-solid fa-bolt text-lg mb-1"></i>
-                <span>Live</span>
+                <i class="fa-solid fa-bolt text-lg mb-1"></i><span>Live</span>
+                <span class="absolute top-1 right-3 bg-rose-500 rounded-full w-2 h-2 animate-ping"></span>
+                <span class="absolute top-1 right-3 bg-rose-500 rounded-full w-2 h-2"></span>
             </div>
-            
             <div onclick="switchTab('guests')" id="tab-guests" class="nav-tab flex flex-col items-center justify-center text-gray-400 w-1/5 py-1 cursor-pointer transition">
-                <i class="fa-solid fa-users text-lg mb-1"></i>
-                <span>Guests</span>
+                <i class="fa-solid fa-users text-lg mb-1"></i><span>Guests</span>
             </div>
-            
             <div onclick="switchTab('ops')" id="tab-ops" class="nav-tab flex flex-col items-center justify-center text-gray-400 w-1/5 py-1 cursor-pointer transition">
-                <i class="fa-solid fa-briefcase text-lg mb-1"></i>
-                <span>Ops</span>
+                <i class="fa-solid fa-briefcase text-lg mb-1"></i><span>Ops</span>
             </div>
-            
             <div onclick="switchTab('approvals')" id="tab-approvals" class="nav-tab flex flex-col items-center justify-center text-gray-400 w-1/5 py-1 cursor-pointer transition relative">
-                <i class="fa-solid fa-check-double text-lg mb-1"></i>
-                <span>Approve</span>
+                <i class="fa-solid fa-check-double text-lg mb-1"></i><span>Approve</span>
                 <span id="badge-approvals" class="absolute top-0 right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] hidden shadow-sm">!</span>
             </div>
-
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- JAVASCRIPT LOGIC & API CALLS -->
+    <!-- MODAL FOR DETAILED LIST VIEW (GUESTS & ROOMS) -->
+    <!-- ========================================================================= -->
+    <div id="details-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 hidden flex flex-col justify-end">
+        <div class="bg-white w-full max-w-md mx-auto rounded-t-3xl h-[80vh] flex flex-col shadow-2xl relative">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-5 border-b border-gray-100">
+                <div>
+                    <h3 class="font-black text-xl text-gray-800" id="modal-title">Details</h3>
+                    <p class="text-xs text-gray-500 font-medium" id="modal-subtitle">Loading...</p>
+                </div>
+                <button onclick="closeDetailsModal()" class="bg-gray-100 text-gray-600 h-8 w-8 rounded-full flex justify-center items-center hover:bg-gray-200 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <!-- Sticky Filter Tabs for Modal -->
+            <div class="flex bg-gray-50 border-b border-gray-200 text-xs font-bold" id="modal-filters">
+                <!-- Filters injected dynamically by JS -->
+            </div>
+
+            <!-- Scrollable Content for Modal -->
+            <div class="p-4 overflow-y-auto flex-1 bg-gray-50" id="modal-content">
+                <!-- List content injected dynamically by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT LOGIC (FULLY EXPANDED & UNCOMPRESSED) -->
     <!-- ========================================================================= -->
     <script>
-        // The API URL from your deployed Google Apps Script
         const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
+        
+        let globalGuestsData = []; // Store guest data globally for rapid modal access
 
-        // Auto-Load Data on Startup and Background Sync (Every 2 Minutes)
         window.onload = () => {
             loadAllData();
-            setInterval(loadAllData, 120000); // 120,000 milliseconds = 2 minutes
+            setInterval(loadAllData, 120000); // 2 minute background sync
         };
 
-        // Tab Switching Logic
         function switchTab(tabName) {
-            // Hide all screens
-            document.querySelectorAll('.app-screen').forEach(s => s.classList.add('hidden'));
-            
-            // Show the selected screen
+            document.querySelectorAll('.app-screen').forEach(s => {
+                s.classList.add('hidden');
+            });
             document.getElementById('screen-' + tabName).classList.remove('hidden');
             
-            // Reset all tab colors to gray
             document.querySelectorAll('.nav-tab').forEach(t => { 
                 t.classList.remove('text-indigo-600'); 
                 t.classList.add('text-gray-400'); 
             });
             
-            // Highlight the active tab
             let act = document.getElementById('tab-' + tabName);
             act.classList.remove('text-gray-400'); 
             act.classList.add('text-indigo-600');
         }
 
-        // Master Fetch Function to Load All Modules
         function loadAllData() {
             fetchMasterData();
-            fetchDashboard(); 
+            fetchGuests(); // Fetches guests and updates dashboard metrics
             fetchClientSOS();
             fetchItinerary(); 
             fetchShowflowClient();
-            fetchGuests(); 
             fetchVault(); 
             fetchVendors(); 
             fetchExpenses(); 
         }
 
-        // ---------------------------------------------------------------------
-        // 1. MASTER DATA (Venue Links & Family Name)
-        // ---------------------------------------------------------------------
+        // ================= MASTER DATA =================
         async function fetchMasterData() {
             try {
                 let res = await fetch(`${API_URL}?action=getMasterData`);
@@ -256,7 +322,6 @@
                         document.getElementById('main-venue-card').classList.remove('hidden');
                     }
                     if (item.Key === 'Bride_Groom_Name' && item.Value) {
-                        // Display the couple's name in the top navigation
                         document.getElementById('client-family-name').innerText = item.Value;
                     }
                 });
@@ -265,30 +330,224 @@
             }
         }
 
-        // ---------------------------------------------------------------------
-        // 2. DASHBOARD METRICS
-        // ---------------------------------------------------------------------
-        async function fetchDashboard() {
+        // ================= GUESTS & BIFURCATED DASHBOARD LOGIC =================
+        async function fetchGuests() {
             try {
-                let res = await fetch(`${API_URL}?action=getDashboard`);
+                let res = await fetch(`${API_URL}?action=getGuests`);
                 let data = await res.json();
                 
+                // Save data globally so the Modal can access it without recalling API
+                globalGuestsData = data; 
+                
+                // 1. Update Full Guest Table (Tab 3)
+                let html = '';
                 data.forEach(item => {
-                    if(item.Metric === 'Total Rooms') {
-                        document.getElementById('stat-total-rooms').innerText = item.Value;
-                    }
-                    if(item.Metric === 'Checked-In') {
-                        document.getElementById('stat-checked-in').innerText = item.Value;
-                    }
+                    let isCheckedIn = item.Status.includes('Checked In');
+                    let statusColor = isCheckedIn ? 'text-green-600 bg-green-50 border-green-100' : 'text-orange-600 bg-orange-50 border-orange-100';
+                    
+                    html += `
+                    <tr>
+                        <td class="p-4 border-b border-gray-50">
+                            <div class="font-black text-gray-800 text-sm mb-1">${item.Name}</div>
+                            <div class="text-[11px] text-gray-500 font-medium">${item.Category || 'Guest'} | 📞 ${item.Phone}</div>
+                        </td>
+                        <td class="p-4 border-b border-gray-50">
+                            <div class="text-[10px] font-bold ${statusColor} border px-2 py-1 rounded inline-block mb-2">${item.Status}</div>
+                            <div class="text-xs text-gray-600 font-medium">
+                                <i class="fa-solid fa-door-closed mr-1 text-indigo-400"></i>Rm: ${item.Room_No || 'TBD'}
+                            </div>
+                        </td>
+                    </tr>`;
                 });
+                
+                document.getElementById('guest-container').innerHTML = html || '<tr><td colspan="2" class="p-4 text-gray-500 italic">No guests found.</td></tr>';
+                
+                // 2. Process Bifurcated Dashboard Metrics
+                processDashboardStats(data);
+                
             } catch(e) { 
-                console.error("Error fetching dashboard", e); 
+                console.error("Error fetching guests", e); 
             }
         }
 
-        // ---------------------------------------------------------------------
-        // 3. EMERGENCY SOS SYSTEM
-        // ---------------------------------------------------------------------
+        function processDashboardStats(guests) {
+            // Filter by Side based on the Category column containing "Bride" or "Groom"
+            let brideSide = guests.filter(g => g.Category && g.Category.toLowerCase().includes('bride'));
+            let groomSide = guests.filter(g => g.Category && g.Category.toLowerCase().includes('groom'));
+
+            function calcStats(list) {
+                // Guest Calculations
+                let totalG = list.length;
+                let arrivedG = list.filter(g => g.Status === 'Checked In').length;
+                let pendingG = totalG - arrivedG;
+
+                // Room Calculations (ignoring blanks and TBD)
+                let validRooms = list.filter(g => g.Room_No && g.Room_No.toUpperCase() !== 'TBD' && g.Room_No.trim() !== '');
+                let uniqueRooms = [...new Set(validRooms.map(g => g.Room_No))];
+                let totalR = uniqueRooms.length;
+                
+                let checkedInR = 0;
+                uniqueRooms.forEach(room => {
+                    let peopleInRoom = list.filter(g => g.Room_No === room);
+                    // If anyone in the room is checked in, consider the room occupied
+                    if(peopleInRoom.some(g => g.Status === 'Checked In')) {
+                        checkedInR++;
+                    }
+                });
+                let pendingR = totalR - checkedInR;
+
+                return { totalG, arrivedG, pendingG, totalR, checkedInR, pendingR };
+            }
+
+            let bStats = calcStats(brideSide);
+            let gStats = calcStats(groomSide);
+
+            // Update Bride DOM Elements
+            document.getElementById('bride-guests-total').innerText = bStats.totalG;
+            document.getElementById('bride-guests-arrived').innerText = bStats.arrivedG;
+            document.getElementById('bride-guests-pending').innerText = bStats.pendingG;
+            
+            document.getElementById('bride-rooms-total').innerText = bStats.totalR;
+            document.getElementById('bride-rooms-checkedin').innerText = bStats.checkedInR;
+            document.getElementById('bride-rooms-pending').innerText = bStats.pendingR;
+
+            // Update Groom DOM Elements
+            document.getElementById('groom-guests-total').innerText = gStats.totalG;
+            document.getElementById('groom-guests-arrived').innerText = gStats.arrivedG;
+            document.getElementById('groom-guests-pending').innerText = gStats.pendingG;
+            
+            document.getElementById('groom-rooms-total').innerText = gStats.totalR;
+            document.getElementById('groom-rooms-checkedin').innerText = gStats.checkedInR;
+            document.getElementById('groom-rooms-pending').innerText = gStats.pendingR;
+        }
+
+        // ================= MODAL LOGIC FOR LIST VIEW =================
+        let currentModalSide = '';
+        let currentModalType = '';
+
+        function openDetailsModal(side, type) {
+            currentModalSide = side;
+            currentModalType = type;
+            
+            document.getElementById('details-modal').classList.remove('hidden');
+            
+            let title = side === 'bride' ? "Bride Side" : "Groom Side";
+            document.getElementById('modal-title').innerText = title;
+            
+            // Setup Filters based on type (Guests vs Rooms)
+            let filtersHtml = '';
+            if (type === 'guests') {
+                filtersHtml = `
+                    <div class="flex-1 text-center py-3 cursor-pointer border-b-2 border-indigo-600 text-indigo-600" id="filter-pending" onclick="renderModalList('pending')">Pending</div>
+                    <div class="flex-1 text-center py-3 cursor-pointer text-gray-400" id="filter-arrived" onclick="renderModalList('arrived')">Arrived</div>
+                    <div class="flex-1 text-center py-3 cursor-pointer text-gray-400" id="filter-all" onclick="renderModalList('all')">All</div>
+                `;
+                document.getElementById('modal-filters').innerHTML = filtersHtml;
+                renderModalList('pending'); // Default to pending
+            } else {
+                filtersHtml = `
+                    <div class="flex-1 text-center py-3 cursor-pointer border-b-2 border-indigo-600 text-indigo-600" id="filter-rooms" onclick="renderModalList('rooms')">Allocated Rooms</div>
+                `;
+                document.getElementById('modal-filters').innerHTML = filtersHtml;
+                renderModalList('rooms');
+            }
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+        }
+
+        function renderModalList(filter) {
+            // Update Active Filter styling for Guest view
+            if(currentModalType === 'guests') {
+                ['pending', 'arrived', 'all'].forEach(f => {
+                    let el = document.getElementById('filter-' + f);
+                    if (el) {
+                        if(f === filter) {
+                            el.classList.add('border-indigo-600', 'text-indigo-600');
+                            el.classList.remove('text-gray-400', 'border-transparent');
+                        } else {
+                            el.classList.remove('border-indigo-600', 'text-indigo-600');
+                            el.classList.add('text-gray-400', 'border-transparent');
+                        }
+                    }
+                });
+            }
+
+            // Filter Global Data by Side (Bride/Groom)
+            let targetList = globalGuestsData.filter(g => g.Category && g.Category.toLowerCase().includes(currentModalSide));
+            let html = '';
+            
+            if (currentModalType === 'guests') {
+                document.getElementById('modal-subtitle').innerText = "Guest Details";
+                
+                // Apply specific filter (Pending / Arrived / All)
+                if (filter === 'pending') {
+                    targetList = targetList.filter(g => g.Status !== 'Checked In');
+                } else if (filter === 'arrived') {
+                    targetList = targetList.filter(g => g.Status === 'Checked In');
+                }
+
+                targetList.forEach(item => {
+                    let isChecked = item.Status === 'Checked In';
+                    let statusBadge = isChecked ? '<span class="text-[9px] bg-green-100 text-green-700 px-2 py-1 rounded">Arrived</span>' : '<span class="text-[9px] bg-rose-100 text-rose-700 px-2 py-1 rounded">Pending</span>';
+                    
+                    html += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-sm text-gray-800 flex items-center gap-2 mb-1">
+                                ${item.Name} ${statusBadge}
+                            </div>
+                            <div class="text-[11px] text-gray-500 font-medium">
+                                <i class="fa-solid fa-door-closed mr-1 text-gray-400"></i>Room: ${item.Room_No || 'TBD'}
+                            </div>
+                        </div>
+                        <a href="tel:${item.Phone}" class="bg-green-50 text-green-600 h-10 w-10 flex justify-center items-center rounded-full hover:bg-green-100 transition border border-green-200 shadow-sm">
+                            <i class="fa-solid fa-phone"></i>
+                        </a>
+                    </div>`;
+                });
+                
+                if (targetList.length === 0) {
+                    html = `<div class="text-center py-10 text-sm text-gray-400"><i class="fa-regular fa-face-smile text-3xl mb-2 text-gray-300 block"></i>No guests in this category.</div>`;
+                }
+
+            } else if (currentModalType === 'rooms') {
+                document.getElementById('modal-subtitle').innerText = "Room Allocations";
+                
+                let validRooms = targetList.filter(g => g.Room_No && g.Room_No.toUpperCase() !== 'TBD' && g.Room_No.trim() !== '');
+                let uniqueRooms = [...new Set(validRooms.map(g => g.Room_No))];
+                
+                uniqueRooms.forEach(room => {
+                    let peopleInRoom = targetList.filter(g => g.Room_No === room);
+                    let isCheckedIn = peopleInRoom.some(g => g.Status === 'Checked In');
+                    
+                    let names = peopleInRoom.map(g => g.Name).join(', ');
+                    let statusBadge = isCheckedIn ? '<span class="text-[9px] bg-green-100 text-green-700 px-2 py-1 rounded">Checked-In</span>' : '<span class="text-[9px] bg-orange-100 text-orange-700 px-2 py-1 rounded">Pending</span>';
+
+                    html += `
+                    <div class="bg-white p-4 rounded-xl shadow-sm border ${isCheckedIn ? 'border-green-100' : 'border-orange-100'} mb-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-black text-indigo-700 text-base">
+                                <i class="fa-solid fa-key mr-1.5"></i>${room}
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        <div class="text-xs text-gray-600 font-medium leading-relaxed bg-gray-50 p-2.5 rounded border border-gray-100">
+                            ${names}
+                        </div>
+                    </div>`;
+                });
+                
+                if (uniqueRooms.length === 0) {
+                    html = `<div class="text-center py-10 text-sm text-gray-400">No rooms allocated yet.</div>`;
+                }
+            }
+
+            document.getElementById('modal-content').innerHTML = html;
+        }
+
+        // ================= RESIDUAL LOGIC (SOS, ITINERARY, SHOWFLOW) =================
         async function fetchClientSOS() {
             try {
                 let res = await fetch(`${API_URL}?action=getSOS`);
@@ -312,61 +571,48 @@
                 
                 document.getElementById('client-sos-history').innerHTML = html || '<p class="text-xs text-gray-500 italic">No requests sent yet.</p>';
             } catch(e) { 
-                console.error("Error fetching SOS history", e); 
+                console.error("Error fetching SOS", e); 
             }
         }
 
         async function sendSOS() {
-            let msgInput = document.getElementById('sos-message');
+            let msgInput = document.getElementById('sos-message'); 
             let btn = document.getElementById('sos-btn');
             
             if(!msgInput.value) {
-                alert("Please type a request before sending.");
+                alert("Please type a request.");
                 return;
             }
             
-            btn.innerText = "Sending...";
-            btn.classList.replace('bg-red-600', 'bg-gray-400');
+            btn.innerText = "Sending..."; 
+            btn.classList.replace('bg-red-600', 'bg-gray-400'); 
             btn.disabled = true;
             
             try {
-                // Determine family name to send with SOS
-                let familyNameText = document.getElementById('client-family-name').innerText;
-                if(!familyNameText || familyNameText === 'Host Family') {
-                    familyNameText = 'Yash Family'; // Fallback
-                }
-
+                let fName = document.getElementById('client-family-name').innerText;
                 await fetch(API_URL, { 
                     method: 'POST', 
-                    body: JSON.stringify({ 
-                        action: 'submitSOS', 
-                        clientName: familyNameText, 
-                        message: msgInput.value 
-                    }) 
+                    body: JSON.stringify({ action: 'submitSOS', clientName: fName, message: msgInput.value }) 
                 });
                 
-                msgInput.value = '';
-                btn.innerText = "Sent Successfully!";
+                msgInput.value = ''; 
+                btn.innerText = "Sent!"; 
                 btn.classList.replace('bg-gray-400', 'bg-green-600');
                 
-                fetchClientSOS(); // Refresh SOS history immediately
+                fetchClientSOS();
                 
                 setTimeout(() => { 
                     btn.innerText = "Send Request to Manager"; 
-                    btn.classList.replace('bg-green-600', 'bg-red-600');
-                    btn.disabled = false;
+                    btn.classList.replace('bg-green-600', 'bg-red-600'); 
+                    btn.disabled = false; 
                 }, 3000);
-            } catch(e) {
-                alert("Error sending SOS.");
-                btn.innerText = "Send Request to Manager"; 
-                btn.classList.replace('bg-gray-400', 'bg-red-600');
-                btn.disabled = false;
+            } catch(e) { 
+                btn.innerText = "Error"; 
+                btn.classList.replace('bg-gray-400', 'bg-red-600'); 
+                btn.disabled = false; 
             }
         }
 
-        // ---------------------------------------------------------------------
-        // 4. DETAILED ITINERARY
-        // ---------------------------------------------------------------------
         async function fetchItinerary() {
             try {
                 let res = await fetch(`${API_URL}?action=getItinerary`);
@@ -374,37 +620,28 @@
                 let html = '';
                 
                 data.forEach(item => { 
-                    let dressCodeHtml = item.Dress_Code ? `<div class="bg-purple-50 text-purple-700 text-[10px] px-2.5 py-1 rounded-md font-bold border border-purple-100"><i class="fa-solid fa-shirt mr-1"></i>${item.Dress_Code}</div>` : '';
-                    let dateHtml = item.Date ? `<span class="mr-1 opacity-80">${item.Date} • </span>` : '';
-                    let notesHtml = item.Notes ? `<div class="text-[11px] text-gray-600 bg-gray-50 p-2.5 rounded-lg mb-2 border border-gray-100 font-medium"><i><i class="fa-solid fa-circle-info mr-1.5 text-indigo-400"></i>${item.Notes}</i></div>` : '';
-                    let mapHtml = item.Maps_Link ? `<a href="${item.Maps_Link}" target="_blank" class="text-[10px] bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold inline-block border border-indigo-100 hover:bg-indigo-50 transition shadow-sm"><i class="fa-solid fa-map-location-dot mr-1"></i>View on Map</a>` : '';
-
+                    let dressHtml = item.Dress_Code ? `<div class="bg-purple-50 text-purple-700 text-[10px] px-2.5 py-1 rounded-md font-bold border border-purple-100"><i class="fa-solid fa-shirt mr-1"></i>${item.Dress_Code}</div>` : '';
+                    let mapHtml = item.Maps_Link ? `<a href="${item.Maps_Link}" target="_blank" class="text-[10px] bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold inline-block border border-indigo-100 shadow-sm"><i class="fa-solid fa-map-location-dot mr-1"></i>View Map</a>` : '';
+                    
                     html += `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-500 mb-4 border-r border-y border-gray-100 relative overflow-hidden">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-500 mb-4 border-r border-y border-gray-100">
                         <div class="flex justify-between items-start border-b border-gray-50 pb-3 mb-3">
                             <div>
                                 <div class="font-black text-gray-800 text-lg leading-tight mb-1">${item.Event}</div>
-                                <div class="text-xs text-indigo-600 font-bold">${dateHtml}${item.Time}</div>
+                                <div class="text-xs text-indigo-600 font-bold">${item.Date ? item.Date+' • ' : ''}${item.Time}</div>
                             </div>
-                            ${dressCodeHtml}
+                            ${dressHtml}
                         </div>
-                        <div class="text-xs text-gray-700 mb-3 font-medium flex items-center">
+                        <div class="text-xs text-gray-700 mb-3 font-medium">
                             <i class="fa-solid fa-location-dot mr-2 text-red-400 text-sm"></i>${item.Venue}
                         </div>
-                        ${notesHtml}
                         ${mapHtml}
                     </div>`; 
                 });
-                
                 document.getElementById('itinerary-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No events scheduled.</p>';
-            } catch(e) { 
-                console.error("Error fetching itinerary", e); 
-            }
+            } catch(e) { console.error("Error fetching itinerary", e); }
         }
 
-        // ---------------------------------------------------------------------
-        // 5. LIVE SHOWFLOW EXECUTION & PROOF FEED
-        // ---------------------------------------------------------------------
         async function fetchShowflowClient() {
             try {
                 let res = await fetch(`${API_URL}?action=getShowflow`);
@@ -413,42 +650,26 @@
                 
                 data.forEach(item => {
                     if (item.Status === 'Completed') {
-                        // Logic for Reaction Button vs Liked State
-                        let reactionHtml = '';
-                        if (item.Client_Reaction) {
-                            reactionHtml = `<div class="text-rose-500 font-bold text-xs flex items-center bg-rose-50 px-3 py-1.5 rounded-full"><i class="fa-solid fa-heart mr-1.5 animate-pulse"></i>Loved It</div>`;
-                        } else {
-                            reactionHtml = `<button onclick="reactToTask('${item.Task_ID}', this)" class="text-gray-400 hover:text-rose-500 transition text-2xl flex items-center justify-center h-8 w-8 rounded-full bg-gray-50 border border-gray-100 shadow-sm"><i class="fa-regular fa-heart"></i></button>`;
-                        }
+                        let reactHtml = item.Client_Reaction ? 
+                            `<div class="text-rose-500 font-bold text-xs bg-rose-50 px-3 py-1.5 rounded-full"><i class="fa-solid fa-heart mr-1.5 animate-pulse"></i>Loved It</div>` : 
+                            `<button onclick="reactToTask('${item.Task_ID}', this)" class="text-gray-400 hover:text-rose-500 text-2xl h-8 w-8 rounded-full bg-gray-50 shadow-sm border border-gray-100 transition"><i class="fa-regular fa-heart"></i></button>`;
                         
                         html += `
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-5">
-                            <!-- Header showing Task Name -->
-                            <div class="p-4 border-b border-gray-50 flex justify-between items-center bg-gradient-to-r from-gray-50 to-white">
-                                <div>
-                                    <div class="font-bold text-gray-800 text-base leading-tight">${item.Task}</div>
-                                </div>
-                                <div class="text-[10px] text-green-700 font-bold bg-green-100 px-2.5 py-1 rounded-md border border-green-200">
-                                    <i class="fa-solid fa-check-double mr-1"></i>Done
-                                </div>
+                            <div class="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50">
+                                <div class="font-bold text-gray-800 text-base">${item.Task}</div>
+                                <div class="text-[10px] text-green-700 font-bold bg-green-100 px-2 py-1 rounded"><i class="fa-solid fa-check-double mr-1"></i>Done</div>
                             </div>
-                            
-                            <!-- Display Photo from Google Drive -->
-                            <div class="relative bg-gray-100">
-                                <img src="${item.Proof_URL}" alt="Execution Proof" class="w-full h-56 object-cover" onerror="this.src='https://via.placeholder.com/800x400?text=Image+Processing...'">
-                            </div>
-                            
-                            <!-- Footer with Timestamp & Heart Reaction -->
-                            <div class="p-4 flex justify-between items-center bg-white">
+                            <img src="${item.Proof_URL}" class="w-full h-56 object-cover">
+                            <div class="p-4 flex justify-between items-center">
                                 <div>
-                                    <div class="text-[10px] text-gray-400 uppercase tracking-wider font-bold mb-0.5">Executed At</div>
+                                    <div class="text-[10px] text-gray-400 uppercase font-bold mb-0.5">Executed At</div>
                                     <div class="text-xs text-gray-600 font-medium"><i class="fa-regular fa-clock mr-1 text-indigo-400"></i>${item.Completed_Timestamp}</div>
                                 </div>
-                                ${reactionHtml}
+                                ${reactHtml}
                             </div>
                         </div>`;
                     } else {
-                        // Display Pending Tasks clearly
                         html += `
                         <div class="bg-white p-4 rounded-2xl shadow-sm border border-dashed border-gray-300 mb-3 flex items-center opacity-60">
                             <div class="bg-gray-100 w-10 h-10 rounded-full flex justify-center items-center mr-4 text-gray-400 text-lg">
@@ -456,147 +677,93 @@
                             </div>
                             <div>
                                 <div class="font-bold text-gray-700 text-sm">${item.Task}</div>
-                                <div class="text-[11px] text-gray-500 mt-1 font-medium"><span class="text-orange-500 mr-1">Pending</span> • Scheduled: ${item.Time}</div>
+                                <div class="text-[11px] text-gray-500 mt-1 font-medium"><span class="text-orange-500 mr-1">Pending</span> • ${item.Time}</div>
                             </div>
                         </div>`;
                     }
                 });
-                
-                document.getElementById('showflow-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No execution tasks available.</p>';
-            } catch(e) { 
-                console.error("Error fetching showflow feed", e); 
-            }
+                document.getElementById('showflow-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No tasks.</p>';
+            } catch(e) { console.error("Error fetching showflow", e); }
         }
 
-        async function reactToTask(taskId, btnElement) {
-            // Optimistic UI Update - immediately show the heart
-            btnElement.outerHTML = `<div class="text-rose-500 font-bold text-xs flex items-center bg-rose-50 px-3 py-1.5 rounded-full border border-rose-100"><i class="fa-solid fa-heart mr-1.5"></i>Loved It</div>`;
-            
-            try {
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: 'clientReaction', taskId: taskId }) 
-                });
-            } catch (e) {
-                console.error("Failed to submit reaction.");
-            }
+        async function reactToTask(taskId, btn) {
+            btn.outerHTML = `<div class="text-rose-500 font-bold text-xs bg-rose-50 px-3 py-1.5 rounded-full"><i class="fa-solid fa-heart mr-1.5"></i>Loved It</div>`;
+            try { 
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'clientReaction', taskId: taskId }) }); 
+            } catch(e) { console.error("Reaction failed", e); }
         }
 
-        // ---------------------------------------------------------------------
-        // 6. GUEST LOGISTICS (Arrival & Check-in Details)
-        // ---------------------------------------------------------------------
-        async function fetchGuests() {
-            try {
-                let res = await fetch(`${API_URL}?action=getGuests`);
-                let data = await res.json();
-                let html = '';
-                
-                data.forEach(item => {
-                    let statusColor = item.Status.includes('Checked In') ? 'text-green-600 bg-green-50 border-green-100' : 'text-orange-600 bg-orange-50 border-orange-100';
-                    
-                    html += `
-                    <tr>
-                        <td class="p-4 border-b border-gray-50">
-                            <div class="font-black text-gray-800 text-sm mb-1">${item.Name}</div>
-                            <div class="text-[11px] text-gray-500 font-medium">${item.Category} | 📞 ${item.Phone}</div>
-                        </td>
-                        <td class="p-4 border-b border-gray-50">
-                            <div class="text-[10px] font-bold ${statusColor} border px-2 py-1 rounded inline-block mb-2">${item.Status}</div>
-                            <div class="text-xs text-gray-600 font-medium"><i class="fa-solid fa-door-closed mr-1 text-indigo-400"></i>Rm: ${item.Room_No || 'TBD'}</div>
-                            <div class="text-xs text-gray-600 mt-1 font-medium"><i class="fa-solid fa-car-side mr-1 text-green-400"></i>${item.Driver_Details || 'Not Assigned'}</div>
-                        </td>
-                    </tr>`;
-                });
-                
-                document.getElementById('guest-container').innerHTML = html || '<tr><td colspan="2" class="p-4 text-gray-500 italic">No guests found.</td></tr>';
-            } catch(e) { 
-                console.error("Error fetching guests", e); 
-            }
-        }
-
-        // ---------------------------------------------------------------------
-        // 7. VAULT & VENDORS (Operations)
-        // ---------------------------------------------------------------------
         async function fetchVault() {
             try {
-                let res = await fetch(`${API_URL}?action=getVault`);
-                let data = await res.json();
+                let res = await fetch(`${API_URL}?action=getVault`); 
+                let data = await res.json(); 
                 let html = '';
                 
                 data.forEach(item => { 
                     html += `
-                    <a href="${item.Link}" target="_blank" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md hover:border-red-100 transition group">
-                        <i class="fa-solid fa-file-pdf text-4xl text-red-400 mb-3 group-hover:text-red-500 transition"></i>
-                        <div class="text-xs font-bold text-gray-700 text-center leading-tight">${item.Document}</div>
+                    <a href="${item.Link}" target="_blank" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition group">
+                        <i class="fa-solid fa-file-pdf text-4xl text-red-400 mb-3"></i>
+                        <div class="text-xs font-bold text-gray-700 text-center">${item.Document}</div>
                     </a>`; 
                 });
-                
-                document.getElementById('vault-container').innerHTML = html || '<p class="text-sm text-gray-500 col-span-2 italic">No documents in vault.</p>';
-            } catch(e) { 
-                console.error("Error fetching vault", e); 
-            }
+                document.getElementById('vault-container').innerHTML = html || '<p class="text-sm text-gray-500 col-span-2 italic">No docs.</p>';
+            } catch(e) { console.error("Error fetching vault", e); }
         }
 
         async function fetchVendors() {
             try {
-                let res = await fetch(`${API_URL}?action=getVendors`);
-                let data = await res.json();
+                let res = await fetch(`${API_URL}?action=getVendors`); 
+                let data = await res.json(); 
                 let html = '';
                 
                 data.forEach(item => {
-                    let statusColor = item.Status.includes('On-Site') ? 'text-green-700 bg-green-100 border-green-200' : 'text-orange-700 bg-orange-100 border-orange-200';
+                    let stC = item.Status.includes('On-Site') ? 'text-green-700 bg-green-100 border-green-200' : 'text-orange-700 bg-orange-100 border-orange-200';
                     
                     html += `
                     <div class="bg-white p-4 rounded-xl shadow-sm flex justify-between items-center border border-gray-100 mb-3">
                         <div>
-                            <div class="text-[10px] text-indigo-500 font-bold uppercase tracking-wide mb-1">${item.Service}</div>
+                            <div class="text-[10px] text-indigo-500 font-bold uppercase mb-1">${item.Service}</div>
                             <div class="font-bold text-gray-800 text-sm">${item.Name}</div>
                             <div class="text-xs text-gray-500 mt-1 font-medium"><i class="fa-solid fa-phone mr-1"></i>${item.Phone}</div>
                         </div>
-                        <div class="text-[10px] font-bold px-3 py-1 rounded-md border ${statusColor}">${item.Status}</div>
+                        <div class="text-[10px] font-bold px-3 py-1 rounded-md border ${stC}">${item.Status}</div>
                     </div>`;
                 });
-                
-                document.getElementById('vendors-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No vendors found.</p>';
-            } catch(e) { 
-                console.error("Error fetching vendors", e); 
-            }
+                document.getElementById('vendors-container').innerHTML = html || '<p class="text-sm text-gray-500 italic">No vendors.</p>';
+            } catch(e) { console.error("Error fetching vendors", e); }
         }
 
-        // ---------------------------------------------------------------------
-        // 8. FINANCIAL APPROVALS (Extra Expenses)
-        // ---------------------------------------------------------------------
         async function fetchExpenses() {
             try {
-                let res = await fetch(`${API_URL}?action=getExpenses`);
-                let data = await res.json();
-                let html = '';
-                let pendingCount = 0;
+                let res = await fetch(`${API_URL}?action=getExpenses`); 
+                let data = await res.json(); 
+                let html = ''; 
+                let pCount = 0;
                 
                 data.reverse().forEach(item => {
                     if (item.Status === 'Pending') {
-                        pendingCount++;
+                        pCount++;
                         html += `
                         <div class="bg-white p-5 rounded-2xl shadow-md border-l-4 border-yellow-400 mb-4" id="exp-${item.Expense_ID}">
                             <div class="flex justify-between items-start mb-5">
                                 <div>
-                                    <div class="font-black text-gray-800 text-base leading-tight">${item.Item_Description}</div>
-                                    <div class="text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-wide">Ref: ${item.Expense_ID}</div>
+                                    <div class="font-black text-gray-800 text-base">${item.Item_Description}</div>
+                                    <div class="text-[10px] text-gray-400 mt-1 font-bold uppercase">Ref: ${item.Expense_ID}</div>
                                 </div>
                                 <div class="font-black text-indigo-600 text-xl">${item.Amount}</div>
                             </div>
                             <div class="flex space-x-3">
-                                <button onclick="updateExpense('${item.Expense_ID}', 'Approved')" class="w-1/2 bg-green-500 text-white font-bold py-3 rounded-xl text-xs hover:bg-green-600 shadow-sm transition">
+                                <button onclick="updateExpense('${item.Expense_ID}', 'Approved')" class="w-1/2 bg-green-500 text-white font-bold py-3 rounded-xl text-xs shadow-sm">
                                     <i class="fa-solid fa-check mr-1"></i>Approve
                                 </button>
-                                <button onclick="updateExpense('${item.Expense_ID}', 'Rejected')" class="w-1/2 bg-red-50 text-red-600 font-bold py-3 rounded-xl text-xs hover:bg-red-100 border border-red-100 transition">
+                                <button onclick="updateExpense('${item.Expense_ID}', 'Rejected')" class="w-1/2 bg-red-50 text-red-600 font-bold py-3 rounded-xl text-xs border border-red-100">
                                     <i class="fa-solid fa-xmark mr-1"></i>Reject
                                 </button>
                             </div>
                         </div>`;
                     } else {
-                        let statusColor = item.Status === 'Approved' ? 'text-green-700 bg-green-50 border-green-200' : 'text-red-700 bg-red-50 border-red-200';
-                        let icon = item.Status === 'Approved' ? 'fa-check' : 'fa-xmark';
+                        let stC = item.Status === 'Approved' ? 'text-green-700 bg-green-50 border-green-200' : 'text-red-700 bg-red-50 border-red-200'; 
+                        let ic = item.Status === 'Approved' ? 'fa-check' : 'fa-xmark';
                         
                         html += `
                         <div class="bg-gray-50 p-4 rounded-xl shadow-sm border border-gray-100 mb-3 flex justify-between items-center opacity-75">
@@ -604,40 +771,27 @@
                                 <div class="font-bold text-gray-700 text-sm">${item.Item_Description}</div>
                                 <div class="font-black text-gray-900 mt-1">${item.Amount}</div>
                             </div>
-                            <div class="text-[10px] font-bold px-3 py-1.5 rounded-md border ${statusColor}">
-                                <i class="fa-solid ${icon} mr-1"></i>${item.Status}
+                            <div class="text-[10px] font-bold px-3 py-1.5 rounded-md border ${stC}">
+                                <i class="fa-solid ${ic} mr-1"></i>${item.Status}
                             </div>
                         </div>`;
                     }
                 });
                 
-                document.getElementById('expenses-container').innerHTML = html || '<p class="text-sm text-green-600 font-bold bg-green-50 p-4 rounded-xl border border-green-200">No pending approvals required.</p>';
-                
-                // Update Notification Badge on Nav Bar for pending approvals
-                if (pendingCount > 0) {
-                    document.getElementById('badge-approvals').classList.remove('hidden');
-                } else {
-                    document.getElementById('badge-approvals').classList.add('hidden');
-                }
-            } catch(e) { 
-                console.error("Error fetching expenses", e); 
-            }
+                document.getElementById('expenses-container').innerHTML = html || '<p class="text-sm text-green-600 font-bold bg-green-50 p-4 rounded-xl border border-green-200">No pending approvals.</p>';
+                if (pCount > 0) document.getElementById('badge-approvals').classList.remove('hidden'); 
+                else document.getElementById('badge-approvals').classList.add('hidden');
+            } catch(e) { console.error("Error fetching expenses", e); }
         }
 
         async function updateExpense(id, newStatus) {
-            // Optimistic UI dimming to show action registered
             document.getElementById(`exp-${id}`).style.opacity = '0.5';
-            
-            try {
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: 'updateExpenseStatus', expenseId: id, newStatus: newStatus }) 
-                });
-                // Refresh list automatically after updating
+            try { 
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateExpenseStatus', expenseId: id, newStatus: newStatus }) }); 
                 fetchExpenses(); 
-            } catch (e) { 
-                alert("Error updating status. Please check your network."); 
-                document.getElementById(`exp-${id}`).style.opacity = '1';
+            } 
+            catch (e) { 
+                document.getElementById(`exp-${id}`).style.opacity = '1'; 
             }
         }
     </script>
