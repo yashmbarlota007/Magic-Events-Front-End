@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ops Team - Magic Events</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 font-sans text-gray-100">
+
+    <nav class="bg-black text-white p-4 shadow-md flex justify-between items-center fixed top-0 w-full z-10 max-w-md mx-auto left-1/2 -translate-x-1/2">
+        <div class="text-lg font-bold text-yellow-400"><i class="fa-solid fa-headset mr-2"></i>Staff Portal</div>
+        <button onclick="fetchData()" class="text-sm bg-gray-800 px-3 py-1 rounded"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button>
+    </nav>
+
+    <div class="max-w-md mx-auto p-4 pt-20 pb-10">
+        
+        <!-- Live SOS Alerts -->
+        <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Live SOS Alerts</h2>
+        <div id="sos-container" class="space-y-2 mb-6">
+            <p class="text-xs text-gray-500">Checking for alerts...</p>
+        </div>
+
+        <!-- Guest Check-in Engine -->
+        <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm"><i class="fa-solid fa-clipboard-check mr-2"></i>Pending Arrivals</h2>
+        <div id="pending-guests-container" class="space-y-3">
+            <p class="text-xs text-gray-500">Loading guests...</p>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwb8DcikLC7wuGaaG6iNc07vHvFC8M4tl_sgptspTBs7K67do_WWBAOWDCEx-n8Q0sAFA/exec';
+
+        window.onload = () => { fetchData(); };
+
+        function fetchData() {
+            fetchSOS(); fetchPendingGuests();
+        }
+
+        async function fetchSOS() {
+            let data = await (await fetch(`${API_URL}?action=getSOS`)).json();
+            let html = '';
+            // Reverse to show latest first
+            data.reverse().forEach(item => {
+                html += `<div class="bg-gray-800 p-3 rounded shadow border-l-4 border-red-500"><div class="text-xs text-gray-400 mb-1">${item.Timestamp} | ${item.Client_Name}</div><div class="font-bold text-white">${item.Message}</div></div>`;
+            });
+            document.getElementById('sos-container').innerHTML = html || '<p class="text-sm text-green-400">No active SOS alerts.</p>';
+        }
+
+        async function fetchPendingGuests() {
+            let data = await (await fetch(`${API_URL}?action=getGuests`)).json();
+            let html = '';
+            data.forEach(item => {
+                if(item.Status !== 'Checked In') {
+                    html += `
+                    <div class="bg-gray-800 p-3 rounded flex justify-between items-center shadow-lg border border-gray-700">
+                        <div>
+                            <div class="font-bold">${item.Name}</div>
+                            <div class="text-xs text-gray-400">Rm: ${item.Room_No || 'TBD'} | 📞 ${item.Phone}</div>
+                        </div>
+                        <button onclick="markCheckedIn('${item.Name}', this)" class="bg-yellow-500 text-black text-xs font-bold px-3 py-2 rounded shadow hover:bg-yellow-400 transition">Check In</button>
+                    </div>`;
+                }
+            });
+            document.getElementById('pending-guests-container').innerHTML = html || '<p class="text-sm text-green-400">All guests checked in!</p>';
+        }
+
+        async function markCheckedIn(guestName, btnElement) {
+            btnElement.innerText = "Processing...";
+            btnElement.disabled = true;
+            
+            await fetch(API_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'checkInGuest', guestName: guestName }) 
+            });
+            
+            btnElement.innerText = "Done";
+            btnElement.classList.replace('bg-yellow-500', 'bg-green-500');
+            setTimeout(fetchData, 1000); // Refresh list
+        }
+    </script>
+</body>
+</html>
