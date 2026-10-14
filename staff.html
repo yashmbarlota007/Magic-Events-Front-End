@@ -46,21 +46,26 @@
                 <p class="text-xs text-gray-500">Checking for alerts...</p>
             </div>
 
-            <!-- RAISE EXPENSE REQUEST (NEW SECTION) -->
+            <!-- RAISE EXPENSE REQUEST -->
             <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
                 <i class="fa-solid fa-file-invoice-dollar mr-2"></i>Raise Expense Request
             </h2>
-            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-8">
+            <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
                 <p class="text-xs text-gray-400 mb-3">Send out-of-scope expenses to client for approval.</p>
-                
                 <input type="text" id="expense-desc" placeholder="Item Description (e.g., 50 Extra Plates)" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white mb-3 text-sm focus:outline-none focus:border-yellow-400">
-                
                 <input type="text" id="expense-amount" placeholder="Amount (e.g., ₹15,000)" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-600 text-white mb-4 text-sm focus:outline-none focus:border-yellow-400">
-                
                 <button onclick="submitExpenseRequest()" id="expense-btn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-lg shadow hover:bg-yellow-400 transition text-sm">
                     Send for Approval
                 </button>
                 <p id="expense-success" class="text-green-400 text-xs mt-2 hidden text-center font-bold">Request Sent to Client!</p>
+            </div>
+
+            <!-- EXPENSE REQUEST STATUS (NEW - FEEDBACK LOOP CLOSED) -->
+            <h2 class="text-yellow-400 font-bold mb-3 uppercase tracking-wider text-sm">
+                <i class="fa-solid fa-clock-rotate-left mr-2"></i>Expense Status
+            </h2>
+            <div id="staff-expenses-container" class="space-y-3 mb-8">
+                <p class="text-xs text-gray-500">Loading history...</p>
             </div>
 
             <!-- Guest Check-in Engine -->
@@ -129,6 +134,7 @@
 
         function fetchData() {
             fetchSOS(); 
+            fetchStaffExpenses();
             fetchPendingGuests();
         }
 
@@ -139,7 +145,6 @@
                 let data = await res.json();
                 let html = '';
                 
-                // Reverse array to show latest alerts first
                 data.reverse().forEach(item => {
                     html += `
                     <div class="bg-gray-800 p-3 rounded shadow border-l-4 border-red-500">
@@ -148,9 +153,33 @@
                     </div>`;
                 });
                 document.getElementById('sos-container').innerHTML = html || '<p class="text-sm text-green-400 bg-gray-800 p-3 rounded">No active SOS alerts.</p>';
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
+        }
+
+        // Fetch Expense Status for Staff (NEW LOGIC ADDED)
+        async function fetchStaffExpenses() {
+            try {
+                let res = await fetch(`${API_URL}?action=getExpenses`);
+                let data = await res.json();
+                let html = '';
+                
+                data.reverse().forEach(item => {
+                    let statusColor = '';
+                    if(item.Status === 'Pending') statusColor = 'text-yellow-400 border-yellow-400';
+                    else if(item.Status === 'Approved') statusColor = 'text-green-400 border-green-400';
+                    else statusColor = 'text-red-400 border-red-400';
+
+                    html += `
+                    <div class="bg-gray-800 p-3 rounded flex justify-between items-center border border-gray-700">
+                        <div>
+                            <div class="font-bold text-white text-sm">${item.Item_Description}</div>
+                            <div class="text-xs text-gray-400 mt-1">ID: ${item.Expense_ID} | ${item.Amount}</div>
+                        </div>
+                        <div class="text-xs font-bold px-3 py-1 rounded border ${statusColor}">${item.Status}</div>
+                    </div>`;
+                });
+                document.getElementById('staff-expenses-container').innerHTML = html || '<p class="text-sm text-gray-400">No expenses raised yet.</p>';
+            } catch (e) { console.error(e); }
         }
 
         // Fetch Pending Guests for Check-in
@@ -173,9 +202,7 @@
                     }
                 });
                 document.getElementById('pending-guests-container').innerHTML = html || '<p class="text-sm text-green-400 bg-gray-800 p-3 rounded">All guests are checked in!</p>';
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         // Mark Guest as Checked In
@@ -193,7 +220,6 @@
                 btnElement.innerText = "Done";
                 btnElement.classList.replace('bg-gray-500', 'bg-green-500');
                 
-                // Refresh list after 1 second
                 setTimeout(fetchData, 1000);
             } catch (e) {
                 alert("Error checking in guest. Try again.");
@@ -203,7 +229,7 @@
             }
         }
 
-        // Submit New Expense Request (NEW FUNCTION)
+        // Submit New Expense Request
         async function submitExpenseRequest() {
             let descInput = document.getElementById('expense-desc');
             let amountInput = document.getElementById('expense-amount');
@@ -229,7 +255,6 @@
                     }) 
                 });
                 
-                // Reset form
                 descInput.value = '';
                 amountInput.value = '';
                 successText.classList.remove('hidden');
@@ -237,6 +262,9 @@
                 btn.innerText = "Send for Approval";
                 btn.disabled = false;
                 btn.classList.replace('bg-gray-500', 'bg-yellow-500');
+                
+                // Immediately refresh the staff expenses list so they see the new "Pending" request
+                fetchStaffExpenses();
                 
                 setTimeout(() => { 
                     successText.classList.add('hidden'); 
